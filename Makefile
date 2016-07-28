@@ -1,5 +1,8 @@
 CC?=gcc
-CFLAGS?=-luv -lrt -ldl -std=gnu99 -Wall -pedantic -Werror
+CFLAGS?=$(shell pkg-config libuv --cflags --libs) -lrt -ldl -std=gnu99 -Wall -pedantic -Werror
 
-all: main.c
-	${CC} main.c ${CFLAGS} -O3 -o main
+all:
+	@mkdir -p build
+	@${CC} client.c ${CFLAGS} -O3 -o build/client
+	@${CC} server.c ${CFLAGS} -O3 -o build/server
+
