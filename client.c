@@ -1,10 +1,10 @@
 #include <uv.h>
 #include <stdio.h>
 
-uv_tcp_t example_socket;
-uv_loop_t loop;
-uv_connect_t example_connect;
-struct sockaddr_in dest;
+uv_tcp_t main_socket;
+uv_loop_t main_loop;
+uv_connect_t main_connection;
+struct sockaddr_in destination_address;
 
 char read_buffer[65536];
 char write_buffer[65536];
@@ -40,13 +40,23 @@ void on_connect(uv_connect_t* connection, int status) {
     }
 }
 
+void run_loop_step() {
+    uv_run(&main_loop, UV_RUN_ONCE);
+}
+
+void connect_main_socket(const char * ip_address, int port) {
+    uv_loop_init(&main_loop);
+
+    uv_tcp_init(&main_loop, &main_socket);
+    uv_ip4_addr(ip_address, port, &destination_address);
+
+    uv_tcp_connect(&main_connection, &main_socket, (const struct sockaddr*)&destination_address, on_connect);
+
+}
+
+
 int main() {
-    uv_loop_init(&loop);
-
-    uv_tcp_init(&loop, &example_socket);
-    uv_ip4_addr("127.0.0.1", 3000, &dest);
-
-    uv_tcp_connect(&example_connect, &example_socket, (const struct sockaddr*)&dest, on_connect);
-
-    return uv_run(&loop, UV_RUN_DEFAULT);
+    connect_main_socket("127.0.0.1", 3000);
+    while (1) run_loop_step();
+    return 0;
 }
