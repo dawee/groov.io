@@ -11,11 +11,6 @@ char write_buffer[65536];
 
 uv_write_t write_req;
 
-uv_buf_t handshake_request[] = {
-    { .base = "GET /socket.io/?EIO=3&transport=websocket HTTP/1.1\nConnection: Upgrade\nUpgrade: websocket\nHost: david.internal.smartimpulse.com:3000\nSec-WebSocket-Version: 13\nSec-WebSocket-Key: MTMtMTQ2OTcwMDczOTcwNA==\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\n\n", .len = 273 }
-};
-
-
 void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
     *buf = uv_buf_init(read_buffer, 65536);
 }
@@ -28,13 +23,20 @@ void on_write(uv_write_t* req, int status) {
 
 }
 
+void send_handshake_request(uv_connect_t* connection) {
+    uv_buf_t handshake_request[] = {
+        { .base = "GET /socket.io/?EIO=3&transport=websocket HTTP/1.1\nConnection: Upgrade\nUpgrade: websocket\nHost: david.internal.smartimpulse.com:3000\nSec-WebSocket-Version: 13\nSec-WebSocket-Key: MTMtMTQ2OTcwMDczOTcwNA==\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\n\n", .len = 273 }
+    };
+
+    uv_write(&write_req, connection->handle, handshake_request, 1, on_write);
+}
+
 void on_connect(uv_connect_t* connection, int status) {
 
     if (status == 0) {
         printf("connected\n");
-
-        uv_write(&write_req, connection->handle, handshake_request, 1, on_write);
         uv_read_start(connection->handle, alloc_buffer, on_read);
+        send_handshake_request(connection);
     }
 }
 
