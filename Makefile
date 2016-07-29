@@ -1,5 +1,5 @@
 CC?=gcc
-cflags=$(shell pkg-config libuv --cflags --libs) -lrt -ldl -std=gnu99 -Wall -pedantic -Werror
+cflags=-I./src $(shell pkg-config libuv --cflags --libs) -lrt -ldl -std=gnu99 -Wall -pedantic -Werror
 sources=$(wildcard src/*.c)
 objects := $(patsubst src/%.c,build/%.o,$(sources))
 

@@ -1,6 +1,8 @@
 #include <uv.h>
 #include <stdio.h>
 
+#include "serializer.h"
+
 uv_tcp_t main_socket;
 uv_loop_t main_loop;
 uv_connect_t main_connection;
@@ -10,6 +12,9 @@ char read_buffer[65536];
 char write_buffer[65536];
 
 uv_write_t write_req;
+
+char request_buf_base[65536];
+uv_buf_t handshake_request = {.base = request_buf_base};
 
 void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
     *buf = uv_buf_init(read_buffer, 65536);
@@ -23,12 +28,17 @@ void on_write(uv_write_t* req, int status) {
 
 }
 
+
 void send_handshake_request(uv_connect_t* connection) {
-    uv_buf_t handshake_request[] = {
-        { .base = "GET /socket.io/?EIO=3&transport=websocket HTTP/1.1\nConnection: Upgrade\nUpgrade: websocket\nHost: david.internal.smartimpulse.com:3000\nSec-WebSocket-Version: 13\nSec-WebSocket-Key: MTMtMTQ2OTcwMDczOTcwNA==\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\n\n", .len = 273 }
+    io_handshake_request_t req = {
+        .hostname = "david.internal.smartimpulse.com",
+        .port = 3000,
+        .version = 13,
+        .key = "MTMtMTQ2OTcwMDczOTcwNA=="
     };
 
-    uv_write(&write_req, connection->handle, handshake_request, 1, on_write);
+    io_serialize_handshake_request(&handshake_request, &req);
+    uv_write(&write_req, connection->handle, &handshake_request, 1, on_write);
 }
 
 void on_connect(uv_connect_t* connection, int status) {
