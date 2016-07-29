@@ -1,5 +1,5 @@
-#ifndef SERIALIZER_H
-#define SERIALIZER_H
+#ifndef IO_SERIALIZER_H
+#define IO_SERIALIZER_H
 
 #include <uv.h>
 
