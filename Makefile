@@ -1,7 +1,7 @@
 CC?=gcc
-cflags=-I./src $(shell pkg-config libuv --cflags --libs) -lrt -ldl -std=gnu99 -Wall -pedantic -Werror
+cflags=-I./src -I./deps/slre $(shell pkg-config libuv --cflags --libs) -lrt -ldl -std=gnu99 -Wall -pedantic -Werror
 sources=$(wildcard src/*.c)
-objects := $(patsubst src/%.c,build/%.o,$(sources))
+objects := $(patsubst src/%.c,build/%.o,$(sources)) build/slre.o
 
 all: bin/client
 
@@ -21,3 +21,7 @@ build/%.o: src/%.c
 build/%-cmd.o: src/cmd/%.c
 	@mkdir -p build
 	@${CC} ${cflags} -c $< -O3  -o $@
+
+build/slre.o: deps/slre/slre.c
+	@mkdir -p build
+	@${CC} -c $< -o $@
