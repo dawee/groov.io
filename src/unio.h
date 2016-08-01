@@ -20,8 +20,8 @@ typedef struct unio_event_stack {
   unio_event_t * events;
 } unio_event_stack_t;
 
-void unio_init(unio_config *);
-void unio_read_events(unio_event_stack *);
-void unio_write_event(unio_event *);
+void unio_init(unio_config_t *);
+void unio_read_events(unio_event_stack_t *);
+void unio_write_event(unio_event_t *);
 
 #endif
