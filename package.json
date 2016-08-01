@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "pretest": "make re",
     "test": "mocha"
   },
   "repository": {
@@ -15,5 +16,8 @@
   "devDependencies": {
     "ffi": "2.0.0",
     "mocha": "3.0.0"
+  },
+  "dependencies": {
+    "socket.io": "1.4.8"
   }
 }

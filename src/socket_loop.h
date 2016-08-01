@@ -15,5 +15,6 @@
  */
 
 void unio_init_socket_loop(unio_config_t *);
+void unio_run_socket_loop_step();
 
 #endif

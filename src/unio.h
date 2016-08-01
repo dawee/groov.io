@@ -10,13 +10,13 @@
 typedef uv_buf_t unio_text_t;
 
 typedef struct unio_config {
-  unio_text_t host_name;
+  unio_text_t * host_address;
   int host_port;
 } unio_config_t;
 
 typedef struct unio_event {
-  unio_text_t name;
-  unio_text_t data;
+  unio_text_t * name;
+  unio_text_t * data;
 } unio_event_t;
 
 typedef struct unio_event_stack {
