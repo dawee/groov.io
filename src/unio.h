@@ -3,6 +3,10 @@
 
 #include <uv.h>
 
+/*
+ * Types Declarations
+ */
+
 typedef uv_buf_t unio_text_t;
 
 typedef struct unio_config {
@@ -19,6 +23,11 @@ typedef struct unio_event_stack {
   int len;
   unio_event_t * events;
 } unio_event_stack_t;
+
+
+/*
+ * API Declarations
+ */
 
 void unio_init(unio_config_t *);
 void unio_read_events(unio_event_stack_t *);

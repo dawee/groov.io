@@ -26,6 +26,7 @@
       'type': 'shared_library',
       'sources': [
         './src/unio.c',
+        './src/socket_loop.c',
       ],
       'conditions': [
         ['OS=="win"', {

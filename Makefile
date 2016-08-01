@@ -4,7 +4,7 @@ all: out/Default/lib.target/libunio.so
 re: clean all
 
 clean:
-	@rm -rf out
+	@rm -rf ./out/Default/obj.target/unio out/Default/lib.target/libunio.so
 
 out/Default/lib.target/libunio.so: build/gyp
 	@./gyp_unio.py -f make unio.gyp
