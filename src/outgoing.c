@@ -21,21 +21,7 @@ static unio_event_t stack_copy_events[UNIO_EVENT_STACK_SIZE];
 static unio_event_stack_t stack_copy = {.len = 0, .events = stack_copy_events};
 
 
-static int unio_outgoing__write_event(int type, char * data, size_t len) {
-  if (stack.len >= UNIO_EVENT_STACK_SIZE) return 0;
-
-  stack.events[stack.len].type = type;
-  stack.events[stack.len].data->len = len;
-  memcpy(stack.events[stack.len].data->base, data, len);
-
-  unio_update_state(&(stack.events[stack.len]));
-
-  stack.len++;
-
-  return 1;
-}
-
-static void unio_outgoing__reset_stack() {
+static void unio_outgoing__init_stack() {
   int index = 0;
 
   stack.len = 0;
@@ -73,6 +59,6 @@ static void unio_outgoing__copy_stack() {
 }
 
 void unio_init_outgoing_events(unio_config_t * config) {
-  unio_outgoing__reset_stack();
+  unio_outgoing__init_stack();
   unio_outgoing__copy_stack();
 }

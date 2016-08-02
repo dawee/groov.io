@@ -21,21 +21,7 @@ static unio_event_t stack_copy_events[UNIO_EVENT_STACK_SIZE];
 static unio_event_stack_t stack_copy = {.len = 0, .events = stack_copy_events};
 
 
-static int unio_incoming__write_event(int type, char * data, size_t len) {
-  if (stack.len >= UNIO_EVENT_STACK_SIZE) return 0;
-
-  stack.events[stack.len].type = type;
-  stack.events[stack.len].data->len = len;
-  memcpy(stack.events[stack.len].data->base, data, len);
-
-  unio_update_state(&(stack.events[stack.len]));
-
-  stack.len++;
-
-  return 1;
-}
-
-static void unio_incoming__reset_stack() {
+static void unio_incoming__init_stack() {
   int index = 0;
 
   stack.len = 0;
@@ -73,18 +59,20 @@ static void unio_incoming__copy_stack() {
 }
 
 void unio_init_incoming_events(unio_config_t * config) {
-  unio_incoming__reset_stack();
+  unio_incoming__init_stack();
   unio_incoming__copy_stack();
 }
 
 unio_event_stack_t * unio_read_incoming_events() {
   unio_run_loop_step();
   unio_incoming__copy_stack();
+  
+  stack.len = 0;
 
   return &stack_copy;
 }
 
 void unio_write_connect_event(int success) {
   unio_connect_event_t event = {.success = success};
-  unio_incoming__write_event(UNIO_EVENT_TYPE_CONNECT, (char *) &event, sizeof(event));
+  unio_write_event_to_stack(&stack, UNIO_EVENT_TYPE_CONNECT, (char *) &event, sizeof(event));
 }

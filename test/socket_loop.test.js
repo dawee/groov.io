@@ -58,8 +58,6 @@ describe('socket loop', () => {
   });
 
   it('should connect to server', (done) => {
-    const io = socketIO();
-
     const server = net.createServer(() => {
       server.close();
       done();
@@ -69,8 +67,6 @@ describe('socket loop', () => {
   });
 
   it('should read a connect event', (done) => {
-    const io = socketIO();
-
     const server = net.createServer(() => {}).listen(HOST_PORT);
 
     lib.unio_init(config.ref());
