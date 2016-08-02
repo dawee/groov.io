@@ -69,11 +69,12 @@ describe('socket loop', () => {
     const server = net.createServer(() => {}).listen(HOST_PORT);
 
     lib.unio_init(config.ref());
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       const stack = lib.unio_read_incoming_events();
       
       if (stack.deref().len == 1 && stack.deref().events.deref().type == UNIO_EVENT_TYPE_CONNECT) {
         server.close();
+        clearInterval(intervalId);
         done();
       }
     }, 0);
