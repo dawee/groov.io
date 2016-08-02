@@ -4,7 +4,7 @@
 static char stack_memory[UNIO_EVENT_STACK_SIZE][UNIO_EVENT_SIZE];
 static uv_buf_t stack_data[UNIO_EVENT_STACK_SIZE];
 static unio_event_t stack_events[UNIO_EVENT_STACK_SIZE];
-static unio_event_stack_t stack = {.len = UNIO_EVENT_STACK_SIZE, .events = stack_events};
+static unio_event_stack_t stack = {.len = 0, .events = stack_events};
 
 
 void unio_init_events(unio_config_t * config) {
@@ -24,5 +24,8 @@ int unio_read_events(unio_event_stack_t * events) {
 
 
 void unio_write_event(unio_event_t * event) {
+  if (stack.len >= UNIO_EVENT_STACK_SIZE) return;
 
+  stack.events[stack.len] = *event;
+  stack.len++;
 }
