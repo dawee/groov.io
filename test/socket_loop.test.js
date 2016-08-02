@@ -50,7 +50,7 @@ describe('socket loop', () => {
     config = new unio_config_t({host_name: hostName.ref(), host_address: hostName.ref(), port: HOST_PORT}); 
 
     lib = ffi.Library(
-      path.join(__dirname, '..', 'out', 'Default', 'obj.target', 'libunio.so'), {
+      path.join(__dirname, '..', 'build', 'Release', 'unio.so'), {
         'unio_init': ["void", [ref.refType(unio_config_t)]],
         'unio_read_incoming_events': [ref.refType(unio_event_stack_t), []],
       }

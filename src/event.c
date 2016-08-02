@@ -7,7 +7,7 @@ int unio_read_connect_event(unio_event_t * event, unio_connect_event_t * connect
   if (event->type != UNIO_EVENT_TYPE_CONNECT) return 0;
 
   memcpy(connect_event, event->data->base, event->data->len);
-  return 0;
+  return 1;
 }
 
 int unio_write_event_to_stack(unio_event_stack_t * stack, int type, char * data, size_t len) {

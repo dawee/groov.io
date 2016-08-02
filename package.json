@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "pretest": "make re",
+    "pretest": "node-gyp build",
     "test": "mocha"
   },
   "repository": {
