@@ -27,27 +27,20 @@ const unio_event_stack_t = Struct();
 unio_event_stack_t.defineProperty('len', ref.types.int);
 unio_event_stack_t.defineProperty('events', ref.refType(unio_event_t));
 
-/*
- * Helpers
- */
-
-function createConfig(hostName, port) {
-  hostNameBuf = new Buffer(hostName);
-  hostName = new uv_buf_t({base: hostNameBuf, len: hostNameBuf.length});
-  return new unio_config_t({host_address: hostName.ref(), port: port}); 
-}
-
-
-/*
- * Test Scenario
- */
-
 
 describe('socket loop', () => {
 
+  const HOST_ADDRESS = '127.0.0.1';
+  const HOST_PORT = 3000;
   let lib;
+  let config;
 
   beforeEach(() => {
+    const hostNameBuf = new Buffer(HOST_ADDRESS);
+    const hostName = new uv_buf_t({base: hostNameBuf, len: hostNameBuf.length});
+    
+    config = new unio_config_t({host_address: hostName.ref(), port: HOST_PORT}); 
+
     lib = ffi.Library(
       path.join(__dirname, '..', 'out', 'Default', 'obj.target', 'libunio.so'), {
         'unio_init': ["void", [ref.refType(unio_config_t)]],
@@ -58,21 +51,19 @@ describe('socket loop', () => {
 
   it('should connect to server', (done) => {
     const io = socketIO();
-    const config = createConfig("127.0.0.1", 3000);
 
     const server = net.createServer(() => {
       server.close();
       done();
-    }).listen(3000);
+    }).listen(HOST_PORT);
 
     lib.unio_init(config.ref());
   });
 
   it('should read a connect event', (done) => {
     const io = socketIO();
-    const config = createConfig("127.0.0.1", 3000);
 
-    const server = net.createServer(() => {}).listen(3000);
+    const server = net.createServer(() => {}).listen(HOST_PORT);
 
     lib.unio_init(config.ref());
     setInterval(() => {
