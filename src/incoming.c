@@ -21,13 +21,18 @@ static unio_event_t stack_copy_events[UNIO_EVENT_STACK_SIZE];
 static unio_event_stack_t stack_copy = {.len = 0, .events = stack_copy_events};
 
 
-static void unio_incoming__write_event(int type, char * data, size_t len) {
-  if (stack.len >= UNIO_EVENT_STACK_SIZE) return;
+static int unio_incoming__write_event(int type, char * data, size_t len) {
+  if (stack.len >= UNIO_EVENT_STACK_SIZE) return 0;
 
   stack.events[stack.len].type = type;
   stack.events[stack.len].data->len = len;
   memcpy(stack.events[stack.len].data->base, data, len);
+
+  unio_update_state_machine(&(stack.events[stack.len]));
+
   stack.len++;
+
+  return 1;
 }
 
 static void unio_incoming__reset_stack() {

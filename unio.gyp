@@ -28,6 +28,7 @@
         './src/boot.c',
         './src/incoming.c',
         './src/loop.c',
+        './src/state.c',
       ],
       'conditions': [
         ['OS=="win"', {

@@ -55,6 +55,16 @@ typedef struct unio_connect_event {
 
 
 /*
+ * States
+ */
+
+enum States {
+  UNIO_STATE_BOOT,
+  UNIO_STATE_CONNECTED,
+};
+
+
+/*
  * API Declarations
  */
 
@@ -71,5 +81,10 @@ unio_event_stack_t * unio_read_incoming_events();
 
 void unio_init_loop(unio_config_t *);
 void unio_run_loop_step();
+
+// State Machine
+
+void unio_init_state_machine(unio_config_t *);
+void unio_update_state_machine(unio_event_t *);
 
 #endif
