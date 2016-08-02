@@ -65,7 +65,7 @@ void unio_init(unio_config_t *);
 // Incoming Events
 
 void unio_init_incoming_events(unio_config_t *);
-int unio_read_incoming_events();
+unio_event_stack_t * unio_read_incoming_events();
 
 // Loop
 

@@ -19,13 +19,16 @@ unio_config_t.defineProperty('host_address', ref.refType(uv_buf_t));
 unio_config_t.defineProperty('port', ref.types.int);
 
 const unio_event_t = Struct();
-unio_event_t.defineProperty('name', ref.refType(uv_buf_t));
+unio_event_t.defineProperty('type', ref.types.int);
 unio_event_t.defineProperty('data', ref.refType(uv_buf_t));
 
 const unio_event_stack_t = Struct();
 
 unio_event_stack_t.defineProperty('len', ref.types.int);
 unio_event_stack_t.defineProperty('events', ref.refType(unio_event_t));
+
+
+const UNIO_EVENT_TYPE_CONNECT = 1;
 
 
 describe('socket loop', () => {
@@ -44,7 +47,7 @@ describe('socket loop', () => {
     lib = ffi.Library(
       path.join(__dirname, '..', 'out', 'Default', 'obj.target', 'libunio.so'), {
         'unio_init': ["void", [ref.refType(unio_config_t)]],
-        'unio_read_incoming_events': ["int", []],
+        'unio_read_incoming_events': [ref.refType(unio_event_stack_t), []],
       }
     );
   });
@@ -67,12 +70,12 @@ describe('socket loop', () => {
 
     lib.unio_init(config.ref());
     setInterval(() => {
-     const count = lib.unio_read_incoming_events();
-
-     if (count === 1) {
-      server.close();
-      done();
-     }
-    }, 10);
+      const stack = lib.unio_read_incoming_events();
+      
+      if (stack.deref().len == 1 && stack.deref().events.deref().type == UNIO_EVENT_TYPE_CONNECT) {
+        server.close();
+        done();
+      }
+    }, 0);
   });
 });
