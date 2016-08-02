@@ -1,5 +1,7 @@
 #include "unio.h"
 
+#include <string.h>
+
 
 static char stack_memory[UNIO_EVENT_STACK_SIZE][UNIO_EVENT_SIZE];
 static uv_buf_t stack_data[UNIO_EVENT_STACK_SIZE];
@@ -7,7 +9,16 @@ static unio_event_t stack_events[UNIO_EVENT_STACK_SIZE];
 static unio_event_stack_t stack = {.len = 0, .events = stack_events};
 
 
-void unio_init_incoming_events(unio_config_t * config) {
+static void unio__write_event(int type, char * data, size_t len) {
+  if (stack.len >= UNIO_EVENT_STACK_SIZE) return;
+
+  stack.events[stack.len].type = type;
+  stack.events[stack.len].data->len = len;
+  memcpy(stack.events[stack.len].data->base, data, len);
+  stack.len++;
+}
+
+static void unio__reset_stack() {
   int index = 0;
 
   for (index = 0; index < UNIO_EVENT_STACK_SIZE; ++index) {
@@ -18,14 +29,21 @@ void unio_init_incoming_events(unio_config_t * config) {
   }
 }
 
-int unio_read_incoming_events(unio_event_stack_t * events) {
-  unio_run_loop_step();
+void unio_init_incoming_events(unio_config_t * config) {
+  unio__reset_stack();
 }
 
+int unio_read_incoming_events() {
+  int count = 0;
 
-void unio_write_incoming_event(unio_event_t * event) {
-  if (stack.len >= UNIO_EVENT_STACK_SIZE) return;
+  unio_run_loop_step();
+  count = stack.len;
+  unio__reset_stack();
 
-  stack.events[stack.len] = *event;
-  stack.len++;
+  return count;
+}
+
+void unio_write_connect_event(int success) {
+  unio_connect_event_t event = {.success = success};
+  unio__write_event(UNIO_EVENT_TYPE_CONNECT, (char *) &event, sizeof(event));
 }
