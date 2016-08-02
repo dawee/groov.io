@@ -23,3 +23,22 @@ int unio_write_event_to_stack(unio_event_stack_t * stack, int type, char * data,
 
   return 1;
 }
+
+void unio_copy_event_stack(unio_event_stack_t * stack_copy, unio_event_stack_t * stack) {
+  int index = 0;
+
+  stack_copy->len = stack->len;
+
+  for (index = 0; index < stack->len; ++index) {
+    // Copy len values
+    stack_copy->events[index].type = stack->events[index].type;
+    stack_copy->events[index].data->len = stack->events[index].data->len;
+
+    // Copy Buffers content
+    memcpy(
+      stack_copy->events[index].data->base,
+      stack->events[index].data->base,
+      stack->events[index].data->len
+    );
+  }
+}

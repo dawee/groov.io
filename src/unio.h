@@ -76,11 +76,13 @@ void unio_init(unio_config_t *);
 
 int unio_read_connect_event(unio_event_t *, unio_connect_event_t *);
 int unio_write_event_to_stack(unio_event_stack_t *, int, char *, size_t);
+void unio_copy_event_stack(unio_event_stack_t *, unio_event_stack_t *);
 
 // Incoming Events
 
 void unio_init_incoming_events(unio_config_t *);
 unio_event_stack_t * unio_read_incoming_events();
+
 
 // Outgoing Events
 
