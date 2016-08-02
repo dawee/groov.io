@@ -44,11 +44,11 @@ typedef struct unio_event_stack {
 
 void unio_init(unio_config_t *);
 
-// Events
+// Incoming Events
 
-void unio_init_events(unio_config_t *);
-int unio_read_events(unio_event_stack_t *);
-void unio_write_event(unio_event_t *);
+void unio_init_incoming_events(unio_config_t *);
+int unio_read_incoming_events(unio_event_stack_t *);
+void unio_write_incoming_event(unio_event_t *);
 
 // Loop
 

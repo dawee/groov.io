@@ -51,7 +51,7 @@ describe('socket loop', () => {
     lib = ffi.Library(
       path.join(__dirname, '..', 'out', 'Default', 'obj.target', 'libunio.so'), {
         'unio_init': ["void", [ref.refType(unio_config_t)]],
-        'unio_read_events': ["void", []],
+        'unio_read_incoming_events': ["void", []],
       }
     );
   });
@@ -65,7 +65,7 @@ describe('socket loop', () => {
     net.createServer(() => done()).listen(3000);
 
     lib.unio_init(ctx.config.ref());
-    setInterval(lib.unio_read_events, 100);
+    setInterval(lib.unio_read_incoming_events, 100);
   });
 
 });

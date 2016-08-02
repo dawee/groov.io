@@ -26,7 +26,7 @@
       'type': 'shared_library',
       'sources': [
         './src/boot.c',
-        './src/event.c',
+        './src/incoming.c',
         './src/loop.c',
       ],
       'conditions': [

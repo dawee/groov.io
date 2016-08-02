@@ -7,7 +7,7 @@ static unio_event_t stack_events[UNIO_EVENT_STACK_SIZE];
 static unio_event_stack_t stack = {.len = 0, .events = stack_events};
 
 
-void unio_init_events(unio_config_t * config) {
+void unio_init_incoming_events(unio_config_t * config) {
   int index = 0;
 
   for (index = 0; index < UNIO_EVENT_STACK_SIZE; ++index) {
@@ -18,12 +18,12 @@ void unio_init_events(unio_config_t * config) {
   }
 }
 
-int unio_read_events(unio_event_stack_t * events) {
+int unio_read_incoming_events(unio_event_stack_t * events) {
   unio_run_loop_step();
 }
 
 
-void unio_write_event(unio_event_t * event) {
+void unio_write_incoming_event(unio_event_t * event) {
   if (stack.len >= UNIO_EVENT_STACK_SIZE) return;
 
   stack.events[stack.len] = *event;
