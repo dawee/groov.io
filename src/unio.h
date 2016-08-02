@@ -8,16 +8,19 @@
  * Define types and constants
  */
 
+#define UNIO_PROTOCOL_VERSION 13
 
 // Fixed memory
 
 #define UNIO_EVENT_SIZE 65536
 #define UNIO_EVENT_STACK_SIZE 100
 #define UNIO_READ_BUF_SIZE 2048
+#define UNIO_MAX_HOST_NAME_SIZE 255
 
 // Config type
 
 typedef struct unio_config {
+  uv_buf_t * host_name;
   uv_buf_t * host_address;
   int host_port;
 } unio_config_t;
@@ -35,7 +38,6 @@ typedef struct unio_event_stack {
   int len;
   unio_event_t * events;
 } unio_event_stack_t;
-
 
 /*
  * Events types
@@ -58,10 +60,8 @@ typedef struct unio_connect_event {
  * States
  */
 
-enum States {
-  UNIO_STATE_BOOT,
-  UNIO_STATE_CONNECTED,
-};
+#define UNIO_STATE_BOOT 0
+#define UNIO_STATE_CONNECTED 1
 
 
 /*
@@ -71,6 +71,10 @@ enum States {
 // Boot
 
 void unio_init(unio_config_t *);
+
+// Events
+
+int unio_read_connect_event(unio_event_t *, unio_connect_event_t *);
 
 // Incoming Events
 
@@ -82,9 +86,13 @@ unio_event_stack_t * unio_read_incoming_events();
 void unio_init_loop(unio_config_t *);
 void unio_run_loop_step();
 
-// State Machine
+// Serializer
 
-void unio_init_state_machine(unio_config_t *);
-void unio_update_state_machine(unio_event_t *);
+void unio_init_serialize(unio_config_t *);
+
+// State
+
+void unio_init_state(unio_config_t *);
+void unio_update_state(unio_event_t *);
 
 #endif

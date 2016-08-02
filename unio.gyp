@@ -26,8 +26,10 @@
       'type': 'shared_library',
       'sources': [
         './src/boot.c',
+        './src/event.c',
         './src/incoming.c',
         './src/loop.c',
+        './src/serializer.c',
         './src/state.c',
       ],
       'conditions': [

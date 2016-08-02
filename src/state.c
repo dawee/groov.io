@@ -2,11 +2,18 @@
 
 static int state;
 
-void unio_init_state_machine(unio_config_t * config) {
+void unio_init_state(unio_config_t * config) {
   state = UNIO_STATE_BOOT;
 }
 
-void unio_update_state_machine(unio_event_t * event) {
-  if (state == UNIO_STATE_BOOT && event->type == UNIO_EVENT_TYPE_CONNECT) {
+void unio_update_state(unio_event_t * event) {
+  unio_connect_event_t connect_event;
+
+  if (state == UNIO_STATE_BOOT && unio_read_connect_event(event, &connect_event) && connect_event.success) {
+    state = UNIO_STATE_CONNECTED;
   }
+}
+
+int unio_read_state() {
+  return state;
 }

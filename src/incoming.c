@@ -28,7 +28,7 @@ static int unio_incoming__write_event(int type, char * data, size_t len) {
   stack.events[stack.len].data->len = len;
   memcpy(stack.events[stack.len].data->base, data, len);
 
-  unio_update_state_machine(&(stack.events[stack.len]));
+  unio_update_state(&(stack.events[stack.len]));
 
   stack.len++;
 
