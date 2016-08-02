@@ -29,6 +29,7 @@
         './src/event.c',
         './src/incoming.c',
         './src/loop.c',
+        './src/outgoing.c',
         './src/serializer.c',
         './src/state.c',
       ],

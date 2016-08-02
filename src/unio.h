@@ -81,6 +81,10 @@ int unio_read_connect_event(unio_event_t *, unio_connect_event_t *);
 void unio_init_incoming_events(unio_config_t *);
 unio_event_stack_t * unio_read_incoming_events();
 
+// Outgoing Events
+
+void unio_init_outgoing_events(unio_config_t *);
+
 // Loop
 
 void unio_init_loop(unio_config_t *);
