@@ -3,6 +3,14 @@
 
 #include <uv.h>
 
+
+/*
+ * Constants
+ */
+
+#define UNIO_READ_BUF_SIZE = 2048;
+
+
 /*
  * Types Declarations
  */
@@ -30,7 +38,16 @@ typedef struct unio_event_stack {
  */
 
 void unio_init(unio_config_t *);
+
+// Events
+
+void unio_init_events(unio_config_t *);
 void unio_read_events(unio_event_stack_t *);
 void unio_write_event(unio_event_t *);
+
+// Loop
+
+void unio_init_loop(unio_config_t *);
+void unio_run_loop_step();
 
 #endif

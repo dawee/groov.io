@@ -25,8 +25,9 @@
       'target_name': 'unio',
       'type': 'shared_library',
       'sources': [
-        './src/unio.c',
-        './src/socket_loop.c',
+        './src/boot.c',
+        './src/event.c',
+        './src/loop.c',
       ],
       'conditions': [
         ['OS=="win"', {
