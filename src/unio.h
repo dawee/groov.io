@@ -94,7 +94,6 @@ void unio_init_incoming_events(unio_config_t *);
 unio_event_stack_t * unio_read_incoming_events();
 void unio_write_incoming_connect_event(int);
 
-
 // Outgoing Events
 
 void unio_init_outgoing_events(unio_config_t *);
