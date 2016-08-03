@@ -14,7 +14,7 @@
 
 #define UNIO_MAX_MESSAGE_SIZE 65536
 #define UNIO_EVENT_SIZE 131072
-#define UNIO_EVENT_STACK_SIZE 100
+#define UNIO_EVENT_MAX_STACK_SIZE 100
 #define UNIO_READ_BUF_SIZE 2048
 #define UNIO_MAX_HOST_NAME_SIZE 255
 
@@ -83,7 +83,7 @@ void unio_init(unio_config_t *);
 
 // Events
 
-void unio_init_event_stack(unio_event_stack_t *, uv_buf_t *, char [UNIO_EVENT_STACK_SIZE][UNIO_EVENT_SIZE]);
+void unio_init_event_stack(unio_event_stack_t *, uv_buf_t *, char [UNIO_EVENT_MAX_STACK_SIZE][UNIO_EVENT_SIZE]);
 int unio_read_connect_event(unio_event_t *, unio_connect_event_t *);
 int unio_write_event_to_stack(unio_event_stack_t *, int, char *, size_t);
 unio_event_stack_t * unio_read_event_stack(unio_event_stack_t *, unio_event_stack_t *);

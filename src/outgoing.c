@@ -6,18 +6,18 @@
  * Events Stack
  */
 
-static char stack_memory[UNIO_EVENT_STACK_SIZE][UNIO_EVENT_SIZE];
-static uv_buf_t stack_bufs[UNIO_EVENT_STACK_SIZE];
-static unio_event_t stack_events[UNIO_EVENT_STACK_SIZE];
+static char stack_memory[UNIO_EVENT_MAX_STACK_SIZE][UNIO_EVENT_SIZE];
+static uv_buf_t stack_bufs[UNIO_EVENT_MAX_STACK_SIZE];
+static unio_event_t stack_events[UNIO_EVENT_MAX_STACK_SIZE];
 static unio_event_stack_t stack = {.len = 0, .events = stack_events};
 
 /*
  * Read copy of the event stack
  */
 
-static char stack_copy_memory[UNIO_EVENT_STACK_SIZE][UNIO_EVENT_SIZE];
-static uv_buf_t stack_copy_bufs[UNIO_EVENT_STACK_SIZE];
-static unio_event_t stack_copy_events[UNIO_EVENT_STACK_SIZE];
+static char stack_copy_memory[UNIO_EVENT_MAX_STACK_SIZE][UNIO_EVENT_SIZE];
+static uv_buf_t stack_copy_bufs[UNIO_EVENT_MAX_STACK_SIZE];
+static unio_event_t stack_copy_events[UNIO_EVENT_MAX_STACK_SIZE];
 static unio_event_stack_t stack_copy = {.len = 0, .events = stack_copy_events};
 
 /*

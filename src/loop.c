@@ -7,7 +7,7 @@ static uv_tcp_t client;
 static uv_connect_t connection;
 static struct sockaddr_in address;
 static int write_requests_count = 0;
-static uv_write_t write_requests[UNIO_EVENT_STACK_SIZE];
+static uv_write_t write_requests[UNIO_EVENT_MAX_STACK_SIZE];
 static int connected = 0;
 
 static void unio_loop__on_connect(uv_connect_t * new_connection, int status) {

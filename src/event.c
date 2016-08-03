@@ -3,12 +3,12 @@
 #include <string.h>
 
 
-void unio_init_event_stack(unio_event_stack_t * stack, uv_buf_t * stack_bufs, char stack_memory[UNIO_EVENT_STACK_SIZE][UNIO_EVENT_SIZE]) {
+void unio_init_event_stack(unio_event_stack_t * stack, uv_buf_t * stack_bufs, char stack_memory[UNIO_EVENT_MAX_STACK_SIZE][UNIO_EVENT_SIZE]) {
   int index = 0;
 
   stack->len = 0;
 
-  for (index = 0; index < UNIO_EVENT_STACK_SIZE; ++index) {
+  for (index = 0; index < UNIO_EVENT_MAX_STACK_SIZE; ++index) {
     stack->events[index].type = UNIO_EVENT_TYPE_NONE;
     stack->events[index].data = &(stack_bufs[index]);
     stack->events[index].data->len = UNIO_EVENT_SIZE;
@@ -17,7 +17,7 @@ void unio_init_event_stack(unio_event_stack_t * stack, uv_buf_t * stack_bufs, ch
 }
 
 int unio_write_event_to_stack(unio_event_stack_t * stack, int type, char * data, size_t len) {
-  if (stack->len >= UNIO_EVENT_STACK_SIZE) return 0;
+  if (stack->len >= UNIO_EVENT_MAX_STACK_SIZE) return 0;
 
   stack->events[stack->len].type = type;
   stack->events[stack->len].data->len = len;
