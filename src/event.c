@@ -3,11 +3,17 @@
 #include <string.h>
 
 
-int unio_read_connect_event(unio_event_t * event, unio_connect_event_t * connect_event) {
-  if (event->type != UNIO_EVENT_TYPE_CONNECT) return 0;
+void unio_init_event_stack(unio_event_stack_t * stack, uv_buf_t * stack_bufs, char stack_memory[UNIO_EVENT_STACK_SIZE][UNIO_EVENT_SIZE]) {
+  int index = 0;
 
-  memcpy(connect_event, event->data->base, event->data->len);
-  return 1;
+  stack->len = 0;
+
+  for (index = 0; index < UNIO_EVENT_STACK_SIZE; ++index) {
+    stack->events[index].type = UNIO_EVENT_TYPE_NONE;
+    stack->events[index].data = &(stack_bufs[index]);
+    stack->events[index].data->len = UNIO_EVENT_SIZE;
+    stack->events[index].data->base = stack_memory[index];
+  }
 }
 
 int unio_write_event_to_stack(unio_event_stack_t * stack, int type, char * data, size_t len) {
@@ -45,4 +51,11 @@ unio_event_stack_t * unio_read_event_stack(unio_event_stack_t * stack_copy, unio
   stack->len = 0;
 
   return stack_copy;
+}
+
+int unio_read_connect_event(unio_event_t * event, unio_connect_event_t * connect_event) {
+  if (event->type != UNIO_EVENT_TYPE_CONNECT) return 0;
+
+  memcpy(connect_event, event->data->base, event->data->len);
+  return 1;
 }

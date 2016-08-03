@@ -7,7 +7,7 @@
  */
 
 static char stack_memory[UNIO_EVENT_STACK_SIZE][UNIO_EVENT_SIZE];
-static uv_buf_t stack_data[UNIO_EVENT_STACK_SIZE];
+static uv_buf_t stack_bufs[UNIO_EVENT_STACK_SIZE];
 static unio_event_t stack_events[UNIO_EVENT_STACK_SIZE];
 static unio_event_stack_t stack = {.len = 0, .events = stack_events};
 
@@ -16,29 +16,14 @@ static unio_event_stack_t stack = {.len = 0, .events = stack_events};
  */
 
 static char stack_copy_memory[UNIO_EVENT_STACK_SIZE][UNIO_EVENT_SIZE];
-static uv_buf_t stack_copy_data[UNIO_EVENT_STACK_SIZE];
+static uv_buf_t stack_copy_bufs[UNIO_EVENT_STACK_SIZE];
 static unio_event_t stack_copy_events[UNIO_EVENT_STACK_SIZE];
 static unio_event_stack_t stack_copy = {.len = 0, .events = stack_copy_events};
 
 
 void unio_init_incoming_events(unio_config_t * config) {
-  int index = 0;
-
-  stack.len = 0;
-
-  for (index = 0; index < UNIO_EVENT_STACK_SIZE; ++index) {
-    // Main Stack
-    stack.events[index].type = UNIO_EVENT_TYPE_NONE;
-    stack.events[index].data = &(stack_data[index]);
-    stack.events[index].data->len = UNIO_EVENT_SIZE;
-    stack.events[index].data->base = stack_memory[index];
-
-    // Copy
-    stack_copy.events[index].type = UNIO_EVENT_TYPE_NONE;
-    stack_copy.events[index].data = &(stack_copy_data[index]);
-    stack_copy.events[index].data->len = UNIO_EVENT_SIZE;
-    stack_copy.events[index].data->base = stack_copy_memory[index];
-  }
+  unio_init_event_stack(&stack, stack_bufs, stack_memory);
+  unio_init_event_stack(&stack_copy, stack_copy_bufs, stack_copy_memory);
 }
 
 unio_event_stack_t * unio_read_incoming_events() {
