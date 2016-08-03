@@ -5,6 +5,7 @@
       'target_name': 'libgroov',
       'type': 'shared_library',
       'sources': [
+        './deps/slre/slre.c',
         './src/boot.c',
         './src/event.c',
         './src/incoming.c',
