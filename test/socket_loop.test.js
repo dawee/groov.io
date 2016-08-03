@@ -89,21 +89,12 @@ describe('socket loop', () => {
     const io = socketIO();
     let intervalId;
 
-    io.listen(HOST_PORT + 1);
-
-    const proxy = net.createServer((socket) => {
-      const client = new net.Socket();
-
-      client.connect(HOST_PORT + 1);
-      socket.pipe(client);
-      //client.on('data', (buf) => console.log(buf.toString()));
-    }).listen(HOST_PORT);
+    io.listen(HOST_PORT);
 
     lib.groov_init(config.ref());
 
     io.on('connect', () => {
       io.close();
-      proxy.close();
       clearInterval(intervalId);
       done();
     });

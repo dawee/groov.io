@@ -9,9 +9,22 @@ static struct sockaddr_in address;
 static int write_requests_count = 0;
 static uv_write_t write_requests[GROOV_EVENT_MAX_STACK_SIZE];
 static int connected = 0;
+static char read_buf_base[GROOV_MAX_MESSAGE_SIZE];
+static uv_buf_t read_buf = {.base = read_buf_base};
+
+static void groov_loop__alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
+  read_buf.len = GROOV_MAX_MESSAGE_SIZE;
+  *buf = read_buf;
+}
+
+static void groov_loop__on_read(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf) {
+}
 
 static void groov_loop__on_connect(uv_connect_t * new_connection, int status) {
-  if (status == 0) connected = 1;
+  if (status == 0) {
+    connected = 1;
+    uv_read_start(connection.handle, groov_loop__alloc_buffer, groov_loop__on_read);
+  }
 
   groov_write_incoming_connect_event(status == 0);
 }
