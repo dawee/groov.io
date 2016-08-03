@@ -42,12 +42,7 @@ void unio_init_incoming_events(unio_config_t * config) {
 }
 
 unio_event_stack_t * unio_read_incoming_events() {
-  unio_run_loop_step();
-  unio_copy_event_stack(&stack_copy, &stack);
-  
-  stack.len = 0;
-
-  return &stack_copy;
+  return unio_read_event_stack(&stack_copy, &stack);
 }
 
 void unio_write_incoming_connect_event(int success) {

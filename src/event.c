@@ -24,8 +24,8 @@ int unio_write_event_to_stack(unio_event_stack_t * stack, int type, char * data,
   return 1;
 }
 
-void unio_copy_event_stack(unio_event_stack_t * stack_copy, unio_event_stack_t * stack) {
-  int index = 0;
+unio_event_stack_t * unio_read_event_stack(unio_event_stack_t * stack_copy, unio_event_stack_t * stack) {
+  int index = 0;  
 
   stack_copy->len = stack->len;
 
@@ -41,4 +41,8 @@ void unio_copy_event_stack(unio_event_stack_t * stack_copy, unio_event_stack_t *
       stack->events[index].data->len
     );
   }
+
+  stack->len = 0;
+
+  return stack_copy;
 }

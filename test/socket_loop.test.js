@@ -53,6 +53,7 @@ describe('socket loop', () => {
       path.join(__dirname, '..', 'build', 'Release', 'unio.so'), {
         'unio_init': ["void", [ref.refType(unio_config_t)]],
         'unio_read_incoming_events': [ref.refType(unio_event_stack_t), []],
+        'unio_run_loop_step': ['void', []],
       }
     );
   });
@@ -71,6 +72,8 @@ describe('socket loop', () => {
 
     lib.unio_init(config.ref());
     const intervalId = setInterval(() => {
+      lib.unio_run_loop_step();
+
       const stack = lib.unio_read_incoming_events();
       
       if (stack.deref().len == 1 && stack.deref().events.deref().type == UNIO_EVENT_TYPE_CONNECT) {
