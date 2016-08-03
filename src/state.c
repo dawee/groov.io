@@ -1,20 +1,20 @@
-#include "unio.h"
+#include "groov.h"
 
 static int state;
 
-void unio_init_state(unio_config_t * config) {
-  state = UNIO_STATE_BOOT;
+void groov_init_state(groov_config_t * config) {
+  state = GROOV_STATE_BOOT;
 }
 
-void unio_update_state(unio_event_t * event) {
-  unio_connect_event_t connect_event;
+void groov_update_state(groov_event_t * event) {
+  groov_connect_event_t connect_event;
 
-  if (state == UNIO_STATE_BOOT && unio_read_connect_event(event, &connect_event) && connect_event.success) {
-    state = UNIO_STATE_CONNECTED;
-    unio_write_outgoing_handshake_request();
+  if (state == GROOV_STATE_BOOT && groov_read_connect_event(event, &connect_event) && connect_event.success) {
+    state = GROOV_STATE_CONNECTED;
+    groov_write_outgoing_handshake_request();
   }
 }
 
-int unio_read_state() {
+int groov_read_state() {
   return state;
 }

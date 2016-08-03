@@ -14,22 +14,22 @@ const uv_buf_t = Struct();
 uv_buf_t.defineProperty('base', ref.types.CString);
 uv_buf_t.defineProperty('len', ref.types.size_t);
 
-const unio_config_t = Struct();
-unio_config_t.defineProperty('host_name', ref.refType(uv_buf_t));
-unio_config_t.defineProperty('host_address', ref.refType(uv_buf_t));
-unio_config_t.defineProperty('port', ref.types.int);
+const groov_config_t = Struct();
+groov_config_t.defineProperty('host_name', ref.refType(uv_buf_t));
+groov_config_t.defineProperty('host_address', ref.refType(uv_buf_t));
+groov_config_t.defineProperty('port', ref.types.int);
 
-const unio_event_t = Struct();
-unio_event_t.defineProperty('type', ref.types.int);
-unio_event_t.defineProperty('data', ref.refType(uv_buf_t));
+const groov_event_t = Struct();
+groov_event_t.defineProperty('type', ref.types.int);
+groov_event_t.defineProperty('data', ref.refType(uv_buf_t));
 
-const unio_event_stack_t = Struct();
+const groov_event_stack_t = Struct();
 
-unio_event_stack_t.defineProperty('len', ref.types.int);
-unio_event_stack_t.defineProperty('events', ref.refType(unio_event_t));
+groov_event_stack_t.defineProperty('len', ref.types.int);
+groov_event_stack_t.defineProperty('events', ref.refType(groov_event_t));
 
 
-const UNIO_EVENT_TYPE_CONNECT = 1;
+const GROOV_EVENT_TYPE_CONNECT = 1;
 
 
 describe('socket loop', () => {
@@ -47,13 +47,13 @@ describe('socket loop', () => {
     const hostAddress = new uv_buf_t({base: hostAddressBuf, len: hostAddressBuf.length});
     const hostName = new uv_buf_t({base: hostNameBuf, len: hostNameBuf.length});
     
-    config = new unio_config_t({host_name: hostName.ref(), host_address: hostName.ref(), port: HOST_PORT}); 
+    config = new groov_config_t({host_name: hostName.ref(), host_address: hostName.ref(), port: HOST_PORT}); 
 
     lib = ffi.Library(
-      path.join(__dirname, '..', 'build', 'Release', 'unio.so'), {
-        'unio_init': ["void", [ref.refType(unio_config_t)]],
-        'unio_read_incoming_events': [ref.refType(unio_event_stack_t), []],
-        'unio_run_loop_step': ['void', []],
+      path.join(__dirname, '..', 'build', 'Release', 'groov.so'), {
+        'groov_init': ["void", [ref.refType(groov_config_t)]],
+        'groov_read_incoming_events': [ref.refType(groov_event_stack_t), []],
+        'groov_run_loop_step': ['void', []],
       }
     );
   });
@@ -64,19 +64,19 @@ describe('socket loop', () => {
       done();
     }).listen(HOST_PORT);
 
-    lib.unio_init(config.ref());
+    lib.groov_init(config.ref());
   });
 
   it('should read a connect event', (done) => {
     const server = net.createServer(() => {}).listen(HOST_PORT);
 
-    lib.unio_init(config.ref());
+    lib.groov_init(config.ref());
     const intervalId = setInterval(() => {
-      lib.unio_run_loop_step();
+      lib.groov_run_loop_step();
 
-      const stack = lib.unio_read_incoming_events();
+      const stack = lib.groov_read_incoming_events();
       
-      if (stack.deref().len == 1 && stack.deref().events.deref().type == UNIO_EVENT_TYPE_CONNECT) {
+      if (stack.deref().len == 1 && stack.deref().events.deref().type == GROOV_EVENT_TYPE_CONNECT) {
         server.close();
         clearInterval(intervalId);
         done();
@@ -89,16 +89,26 @@ describe('socket loop', () => {
     const io = socketIO();
     let intervalId;
 
-    io.listen(HOST_PORT);
-    lib.unio_init(config.ref());
+    io.listen(HOST_PORT + 1);
+
+    const proxy = net.createServer((socket) => {
+      const client = new net.Socket();
+
+      client.connect(HOST_PORT + 1);
+      socket.pipe(client);
+      //client.on('data', (buf) => console.log(buf.toString()));
+    }).listen(HOST_PORT);
+
+    lib.groov_init(config.ref());
 
     io.on('connect', () => {
       io.close();
+      proxy.close();
       clearInterval(intervalId);
       done();
     });
 
-    intervalId = setInterval(lib.unio_run_loop_step, 0);
+    intervalId = setInterval(lib.groov_run_loop_step, 0);
   });
 
 });

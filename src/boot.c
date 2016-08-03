@@ -1,10 +1,10 @@
-#include "unio.h"
+#include "groov.h"
 
 
-void unio_init(unio_config_t * config) {
-  unio_init_loop(config);
-  unio_init_incoming_events(config);
-  unio_init_outgoing_events(config);
-  unio_init_serialize(config);
-  unio_init_state(config);
+void groov_init(groov_config_t * config) {
+  groov_init_loop(config);
+  groov_init_incoming_events(config);
+  groov_init_outgoing_events(config);
+  groov_init_serialize(config);
+  groov_init_state(config);
 }

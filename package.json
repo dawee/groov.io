@@ -1,15 +1,16 @@
 {
-  "name": "unio",
+  "name": "groov.io",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "configure": "node-gyp configure",
     "pretest": "node-gyp build",
     "test": "mocha"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dawee/unio.git"
+    "url": "git+https://github.com/dawee/groov.io.git"
   },
   "author": "David Corticchiato",
   "license": "MIT",

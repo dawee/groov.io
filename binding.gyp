@@ -2,7 +2,7 @@
   'targets': [
     {
       'dependencies': ['./deps/libuv/uv.gyp:libuv'],
-      'target_name': 'libunio',
+      'target_name': 'libgroov',
       'type': 'shared_library',
       'sources': [
         './src/boot.c',
