@@ -18,6 +18,7 @@ static void groov_loop__alloc_buffer(uv_handle_t *handle, size_t suggested_size,
 }
 
 static void groov_loop__on_read(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf) {
+  groov_feed_parser(buf);
 }
 
 static void groov_loop__on_connect(uv_connect_t * new_connection, int status) {
