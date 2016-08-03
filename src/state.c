@@ -9,8 +9,9 @@ void unio_init_state(unio_config_t * config) {
 void unio_update_state(unio_event_t * event) {
   unio_connect_event_t connect_event;
 
-  if (state == UNIO_STATE_BOOT && unio_read_connect_event(event, &connect_event) && connect_event.success) {
+  if (state == UNIO_STATE_BOOT) {
     state = UNIO_STATE_CONNECTED;
+    unio_write_outgoing_handshake_request();
   }
 }
 

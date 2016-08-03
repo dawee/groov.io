@@ -83,4 +83,22 @@ describe('socket loop', () => {
       }
     }, 0);
   });
+
+
+  it('should send an handshake request', (done) => {
+    const io = socketIO();
+    let intervalId;
+
+    io.listen(HOST_PORT);
+    lib.unio_init(config.ref());
+
+    io.on('connect', () => {
+      io.close();
+      clearInterval(intervalId);
+      done();
+    });
+
+    intervalId = setInterval(lib.unio_run_loop_step, 0);
+  });
+
 });

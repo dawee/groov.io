@@ -16,8 +16,8 @@ void unio_init_serialize(unio_config_t * config) {
   memcpy(host_name, config->host_name->base, config->host_name->len);
 }
 
-void unio_serialize_handshake_request(uv_buf_t * buf) {
-  sprintf(buf->base,
+void unio_serialize_handshake_request(unio_message_event_t * message) {
+  sprintf(message->base,
     "%s\n%s\n%s\nHost: %s:%d\nSec-WebSocket-Version: %d\nSec-WebSocket-Key:%s\n\n",
     handshake_request_header,
     handshake_request_connection,
@@ -28,5 +28,5 @@ void unio_serialize_handshake_request(uv_buf_t * buf) {
     "MTMtMTQ2OTcwMDczOTcwNA=="
   );
 
-  buf->len = strlen(buf->base);
+  message->len = strlen(message->base);
 }

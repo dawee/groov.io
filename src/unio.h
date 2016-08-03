@@ -12,7 +12,8 @@
 
 // Fixed memory
 
-#define UNIO_EVENT_SIZE 65536
+#define UNIO_MAX_MESSAGE_SIZE 65536
+#define UNIO_EVENT_SIZE 131072
 #define UNIO_EVENT_STACK_SIZE 100
 #define UNIO_READ_BUF_SIZE 2048
 #define UNIO_MAX_HOST_NAME_SIZE 255
@@ -55,6 +56,14 @@ typedef struct unio_connect_event {
   int success;
 } unio_connect_event_t;
 
+// Message Event
+
+#define UNIO_EVENT_TYPE_MESSAGE 100
+typedef struct unio_message_event {
+  size_t len;
+  char base[UNIO_MAX_MESSAGE_SIZE];
+} unio_message_event_t;
+
 
 /*
  * States
@@ -88,6 +97,8 @@ void unio_write_incoming_connect_event(int);
 // Outgoing Events
 
 void unio_init_outgoing_events(unio_config_t *);
+void unio_write_outgoing_handshake_request();
+unio_event_stack_t * unio_read_outgoing_events();
 
 // Loop
 
@@ -97,6 +108,7 @@ void unio_run_loop_step();
 // Serializer
 
 void unio_init_serialize(unio_config_t *);
+void unio_serialize_handshake_request(unio_message_event_t *);
 
 // State
 

@@ -20,6 +20,12 @@ static uv_buf_t stack_copy_data[UNIO_EVENT_STACK_SIZE];
 static unio_event_t stack_copy_events[UNIO_EVENT_STACK_SIZE];
 static unio_event_stack_t stack_copy = {.len = 0, .events = stack_copy_events};
 
+/*
+ * Message construction buffer
+ */
+
+unio_message_event_t message_buf;
+
 
 void unio_init_outgoing_events(unio_config_t * config) {
   int index = 0;
@@ -39,4 +45,13 @@ void unio_init_outgoing_events(unio_config_t * config) {
     stack_copy.events[index].data->len = UNIO_EVENT_SIZE;
     stack_copy.events[index].data->base = stack_copy_memory[index];
   }
+}
+
+unio_event_stack_t * unio_read_outgoing_events() {
+  return unio_read_event_stack(&stack_copy, &stack);
+}
+
+void unio_write_outgoing_handshake_request() {
+  unio_serialize_handshake_request(&message_buf);
+  unio_write_event_to_stack(&stack, UNIO_EVENT_TYPE_MESSAGE, message_buf.base, message_buf.len);
 }
