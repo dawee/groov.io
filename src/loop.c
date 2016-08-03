@@ -9,7 +9,7 @@ static struct sockaddr_in address;
 
 
 static void unio_loop__on_connect(uv_connect_t * new_connection, int status) {
-  unio_write_connect_event(status == 0);
+  unio_write_incoming_connect_event(status == 0);
 }
 
 void unio_init_loop(unio_config_t * config) {

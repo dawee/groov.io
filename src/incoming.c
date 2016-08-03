@@ -50,7 +50,7 @@ unio_event_stack_t * unio_read_incoming_events() {
   return &stack_copy;
 }
 
-void unio_write_connect_event(int success) {
+void unio_write_incoming_connect_event(int success) {
   unio_connect_event_t event = {.success = success};
   unio_write_event_to_stack(&stack, UNIO_EVENT_TYPE_CONNECT, (char *) &event, sizeof(event));
 }
