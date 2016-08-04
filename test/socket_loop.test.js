@@ -29,6 +29,7 @@ groov_event_stack_t.defineProperty('events', ref.refType(groov_event_t));
 
 
 const GROOV_EVENT_TYPE_CONNECT = 1;
+const GROOV_EVENT_TYPE_HANDSHAKE = 2;
 
 
 describe('socket loop', () => {
@@ -45,8 +46,8 @@ describe('socket loop', () => {
 
     const hostAddress = new uv_buf_t({base: hostAddressBuf, len: hostAddressBuf.length});
     const hostName = new uv_buf_t({base: hostNameBuf, len: hostNameBuf.length});
-    
-    config = new groov_config_t({host_name: hostName.ref(), host_address: hostName.ref(), port: HOST_PORT}); 
+
+    config = new groov_config_t({host_name: hostName.ref(), host_address: hostName.ref(), port: HOST_PORT});
 
     lib = ffi.Library(
       path.join(__dirname, '..', 'build', 'Release', 'groov.so'), {
@@ -74,7 +75,7 @@ describe('socket loop', () => {
       lib.groov_run_loop_step();
 
       const stack = lib.groov_read_incoming_events();
-      
+
       if (stack.deref().len == 1 && stack.deref().events.deref().type == GROOV_EVENT_TYPE_CONNECT) {
         server.close();
         clearInterval(intervalId);
@@ -93,14 +94,31 @@ describe('socket loop', () => {
     lib.groov_init(config.ref());
 
     io.on('connect', () => {
-      setTimeout(() => {
-        io.close();
-        clearInterval(intervalId);
-        done();
-      }, 50);
+      io.close();
+      clearInterval(intervalId);
+      done();
     });
 
     intervalId = setInterval(lib.groov_run_loop_step, 0);
   });
 
+  it('should received an handshake event', (done) => {
+    const io = socketIO();
+
+    io.listen(HOST_PORT);
+
+    lib.groov_init(config.ref());
+
+    const intervalId = setInterval(() => {
+      lib.groov_run_loop_step();
+
+      const stack = lib.groov_read_incoming_events();
+
+      if (stack.deref().len == 1 && stack.deref().events.deref().type == GROOV_EVENT_TYPE_HANDSHAKE) {
+        io.close();
+        clearInterval(intervalId);
+        done();
+      }
+    }, 0);
+  });
 });

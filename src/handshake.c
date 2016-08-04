@@ -33,5 +33,6 @@ void groov_stream_to_handshake_parser(char byte) {
 
   if (groov_handshake__ended()) {
     received = 1;
+    groov_write_incoming_handshake_event();
   }
 }
