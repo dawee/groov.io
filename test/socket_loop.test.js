@@ -24,7 +24,6 @@ groov_event_t.defineProperty('type', ref.types.int);
 groov_event_t.defineProperty('data', ref.refType(uv_buf_t));
 
 const groov_event_stack_t = Struct();
-
 groov_event_stack_t.defineProperty('len', ref.types.int);
 groov_event_stack_t.defineProperty('events', ref.refType(groov_event_t));
 
