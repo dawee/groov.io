@@ -34,3 +34,8 @@ void groov_write_incoming_connect_event(int success) {
   groov_connect_event_t event = {.success = success};
   groov_write_event_to_stack(&stack, GROOV_EVENT_TYPE_CONNECT, (char *) &event, sizeof(event));
 }
+
+void groov_write_incoming_handshake_event() {
+  groov_handshake_event_t event;
+  groov_write_event_to_stack(&stack, GROOV_EVENT_TYPE_HANDSHAKE, (char *) &event, sizeof(event));
+}

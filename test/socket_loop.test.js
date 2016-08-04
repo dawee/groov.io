@@ -93,9 +93,11 @@ describe('socket loop', () => {
     lib.groov_init(config.ref());
 
     io.on('connect', () => {
-      io.close();
-      clearInterval(intervalId);
-      done();
+      setTimeout(() => {
+        io.close();
+        clearInterval(intervalId);
+        done();
+      }, 50);
     });
 
     intervalId = setInterval(lib.groov_run_loop_step, 0);

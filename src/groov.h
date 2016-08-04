@@ -16,6 +16,7 @@
 #define GROOV_EVENT_SIZE 131072
 #define GROOV_EVENT_MAX_STACK_SIZE 100
 #define GROOV_MAX_HOST_NAME_SIZE 255
+ #define GROOV_MAX_HANDSHAKE_SIZE 2048
 
 // Config type
 
@@ -55,6 +56,12 @@ typedef struct groov_connect_event {
   int success;
 } groov_connect_event_t;
 
+// Handshake received Event
+
+#define GROOV_EVENT_TYPE_HANDSHAKE 2
+typedef struct groov_handshake_event {
+} groov_handshake_event_t;
+
 // Message Event
 
 #define GROOV_EVENT_TYPE_MESSAGE 100
@@ -70,6 +77,7 @@ typedef struct groov_message_event {
 
 #define GROOV_STATE_BOOT 0
 #define GROOV_STATE_CONNECTED 1
+ #define GROOV_STATE_HANDSHAKE_RECEIVED 2
 
 
 /*
@@ -87,11 +95,18 @@ int groov_read_connect_event(groov_event_t *, groov_connect_event_t *);
 int groov_write_event_to_stack(groov_event_stack_t *, int, char *, size_t);
 groov_event_stack_t * groov_read_event_stack(groov_event_stack_t *, groov_event_stack_t *);
 
+// Handshake parser
+
+void groov_reset_handshake_parser();
+void groov_stream_to_handshake_parser(char);
+
+
 // Incoming Events
 
 void groov_init_incoming_events(groov_config_t *);
 groov_event_stack_t * groov_read_incoming_events();
 void groov_write_incoming_connect_event(int);
+void groov_write_incoming_handshake_event();
 
 // Outgoing Events
 
@@ -113,5 +128,6 @@ void groov_serialize_handshake_request(groov_message_event_t *);
 
 void groov_init_state(groov_config_t *);
 void groov_update_state(groov_event_t *);
+void groov_stream_by_state(char *, ssize_t);
 
 #endif

@@ -18,16 +18,16 @@ static void groov_loop__alloc_buffer(uv_handle_t *handle, size_t suggested_size,
 }
 
 static void groov_loop__on_read(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf) {
-  groov_feed_parser(buf);
+  groov_stream_by_state(buf->base, nread);
 }
 
 static void groov_loop__on_connect(uv_connect_t * new_connection, int status) {
+  groov_write_incoming_connect_event(status == 0);
+
   if (status == 0) {
     connected = 1;
     uv_read_start(connection.handle, groov_loop__alloc_buffer, groov_loop__on_read);
   }
-
-  groov_write_incoming_connect_event(status == 0);
 }
 
 static void on_write(uv_write_t* req, int status) {
@@ -57,5 +57,5 @@ void groov_init_loop(groov_config_t * config) {
 
 void groov_run_loop_step() {
   if (connected == 1 && write_requests_count == 0) groov_loop__write_requests();
-  uv_run(&loop, UV_RUN_ONCE);
+  uv_run(&loop, UV_RUN_NOWAIT);
 }

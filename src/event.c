@@ -62,3 +62,10 @@ int groov_read_connect_event(groov_event_t * event, groov_connect_event_t * conn
   memcpy(connect_event, event->data->base, event->data->len);
   return 1;
 }
+
+int groov_read_handshake_event(groov_event_t * event, groov_handshake_event_t * handshake_event) {
+  if (event->type != GROOV_EVENT_TYPE_HANDSHAKE) return 0;
+
+  memcpy(handshake_event, event->data->base, event->data->len);
+  return 1;
+}
