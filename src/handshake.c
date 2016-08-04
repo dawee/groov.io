@@ -6,11 +6,11 @@ static char buf_base[GROOV_MAX_HANDSHAKE_SIZE];
 static uv_buf_t buf = {.base = buf_base};
 
 
-static int groov_handshake__equals_at(int index, char byte) {
+static int groov_handshake__equals_at(unsigned index, char byte) {
   return buf.len > index && buf.base[index] == byte;
 }
 
-static int groov_handshake__is_new_line_at(int index) {
+static int groov_handshake__is_new_line_at(unsigned index) {
   return groov_handshake__equals_at(index, 13) && groov_handshake__equals_at(index + 1, 10);
 }
 

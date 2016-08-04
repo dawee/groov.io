@@ -16,7 +16,9 @@
 #define GROOV_EVENT_SIZE 131072
 #define GROOV_EVENT_MAX_STACK_SIZE 100
 #define GROOV_MAX_HOST_NAME_SIZE 255
- #define GROOV_MAX_HANDSHAKE_SIZE 2048
+#define GROOV_MAX_HANDSHAKE_SIZE 512
+#define GROOV_MAX_CONTRACT_SIZE 1024
+
 
 // Config type
 
@@ -88,6 +90,11 @@ typedef struct groov_message_event {
 
 void groov_init(groov_config_t *);
 
+// Contract
+
+void groov_stream_to_contract_parser(char byte);
+
+
 // Events
 
 void groov_init_event_stack(groov_event_stack_t *, uv_buf_t *, char [GROOV_EVENT_MAX_STACK_SIZE][GROOV_EVENT_SIZE]);
@@ -99,7 +106,6 @@ groov_event_stack_t * groov_read_event_stack(groov_event_stack_t *, groov_event_
 
 void groov_reset_handshake_parser();
 void groov_stream_to_handshake_parser(char);
-
 
 // Incoming Events
 

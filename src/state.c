@@ -20,7 +20,7 @@ void groov_update_state(groov_event_t * event) {
 }
 
 void groov_stream_by_state(char * data, ssize_t size) {
-  int index = 0;
+  unsigned index = 0;
   char byte = 0;
 
   for (index = 0; index < size; ++index) {
@@ -29,6 +29,9 @@ void groov_stream_by_state(char * data, ssize_t size) {
     switch (state) {
       case GROOV_STATE_CONNECTED:
         groov_stream_to_handshake_parser(byte);
+        break;
+      case GROOV_STATE_HANDSHAKE_RECEIVED:
+        groov_stream_to_contract_parser(byte);
         break;
       default:
         break;
