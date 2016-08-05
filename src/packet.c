@@ -39,7 +39,7 @@ static void groov_ws_packet__parse_payload_len(char byte) {
 }
 
 static void groov_ws_packet__parse_extended_payload_len(char byte) {
-  uint64_t increment = ((uint64_t) byte) << 8 * cursor;
+  uint64_t increment = ((uint64_t) byte) << (8 * cursor);
   packet.len += increment;
   cursor++;
 
