@@ -39,6 +39,7 @@ groov_event_stack_t.defineProperty('events', ref.refType(groov_events_t));
 
 const GROOV_EVENT_TYPE_CONNECT = 1;
 const GROOV_EVENT_TYPE_HANDSHAKE = 2;
+const GROOV_EVENT_TYPE_PACKET = 3;
 
 
 class EventLoop {
@@ -60,6 +61,7 @@ class EventLoop {
       const event = stack.deref().events.deref()[`i${eventIndex}`];
 
       if (event.type in this.listeners) this.listeners[event.type](event);
+      if (this.stopped) break;
     }
   }
 
@@ -68,6 +70,7 @@ class EventLoop {
   }
 
   stop() {
+    this.stopped = true;
     clearInterval(this.intervalId);
   }
 }
@@ -147,6 +150,21 @@ describe('socket loop', () => {
     lib.groov_init(config.ref());
 
     eventLoop.on(GROOV_EVENT_TYPE_HANDSHAKE, () => {
+      eventLoop.stop();
+      io.close();
+      done();
+    });
+
+    eventLoop.start();
+  });
+
+  it('should received at least one packet event', (done) => {
+    const io = socketIO();
+
+    io.listen(HOST_PORT);
+    lib.groov_init(config.ref());
+
+    eventLoop.on(GROOV_EVENT_TYPE_PACKET, () => {
       eventLoop.stop();
       io.close();
       done();
