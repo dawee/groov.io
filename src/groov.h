@@ -75,6 +75,13 @@ typedef struct groov_connect_event {
 typedef struct groov_handshake_event {
 } groov_handshake_event_t;
 
+// Packet received Event
+
+#define GROOV_EVENT_TYPE_PACKET 3
+typedef struct groov_packet_event {
+  groov_ws_packet_t packet;
+} groov_packet_event_t;
+
 // Message Event
 
 #define GROOV_EVENT_TYPE_MESSAGE 100
@@ -120,6 +127,7 @@ void groov_init_incoming_events(groov_config_t *);
 groov_event_stack_t * groov_read_incoming_events();
 void groov_write_incoming_connect_event(int);
 void groov_write_incoming_handshake_event();
+void groov_write_incoming_packet_event(groov_ws_packet_t *);
 
 // Outgoing Events
 

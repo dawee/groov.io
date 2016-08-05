@@ -114,7 +114,7 @@ describe('socket loop', () => {
 
       const stack = lib.groov_read_incoming_events();
 
-      if (stack.deref().len == 1 && stack.deref().events.deref().type == GROOV_EVENT_TYPE_HANDSHAKE) {
+      if (stack.deref().len > 0 && stack.deref().events.deref().type == GROOV_EVENT_TYPE_HANDSHAKE) {
         io.close();
         clearInterval(intervalId);
         done();

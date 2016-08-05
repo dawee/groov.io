@@ -39,3 +39,9 @@ void groov_write_incoming_handshake_event() {
   groov_handshake_event_t event;
   groov_write_event_to_stack(&stack, GROOV_EVENT_TYPE_HANDSHAKE, (char *) &event, sizeof(event));
 }
+
+void groov_write_incoming_packet_event(groov_ws_packet_t * packet) {
+  groov_packet_event_t event;
+  event.packet = *packet;
+  groov_write_event_to_stack(&stack, GROOV_EVENT_TYPE_PACKET, (char *) &event, sizeof(event));
+}

@@ -46,6 +46,18 @@ static void groov_ws_packet__parse_extended_payload_len(char byte) {
   if (cursor == extended_bytes_count) groov_ws_packet__switch_state(PAYLOAD);
 }
 
+static void groov_ws_packet__parse_payload(char byte) {
+  packet.payload[cursor] = byte;
+  cursor++;
+
+  if (cursor == packet.len) {
+    if (cursor < GROOV_MAX_PAYLOAD_LEN) packet.payload[cursor] = 0;
+
+    groov_write_incoming_packet_event(&packet);
+    groov_reset_ws_packet_parser();
+  }
+}
+
 void groov_reset_ws_packet_parser() {
   groov_ws_packet__switch_state(OPCODE);
 }
@@ -60,6 +72,9 @@ void groov_stream_to_ws_packet_parser(char byte) {
       break;
     case EXTENDED_PAYLOAD_LEN:
       groov_ws_packet__parse_extended_payload_len(byte);
+      break;
+    case PAYLOAD:
+      groov_ws_packet__parse_payload(byte);
       break;
     default:
       break;
