@@ -1,6 +1,6 @@
 const ffi = require('ffi');
 const ref = require('ref');
-const Struct = require('ref-struct');
+const StructType = require('ref-struct');
 const path = require('path');
 const socketIO = require('socket.io');
 const net = require('net');
@@ -10,22 +10,31 @@ const net = require('net');
  * C Structs
  */
 
-const uv_buf_t = Struct();
+const uv_buf_t = StructType();
 uv_buf_t.defineProperty('base', ref.types.CString);
 uv_buf_t.defineProperty('len', ref.types.size_t);
 
-const groov_config_t = Struct();
+const groov_config_t = StructType();
 groov_config_t.defineProperty('host_name', ref.refType(uv_buf_t));
 groov_config_t.defineProperty('host_address', ref.refType(uv_buf_t));
 groov_config_t.defineProperty('port', ref.types.int);
 
-const groov_event_t = Struct();
+
+
+const groov_event_t = StructType();
 groov_event_t.defineProperty('type', ref.types.int);
 groov_event_t.defineProperty('data', ref.refType(uv_buf_t));
 
-const groov_event_stack_t = Struct();
+const groov_events_t = StructType();
+
+for (let i = 0; i < 100; ++i) {
+  groov_events_t.defineProperty(`i${i}`, groov_event_t);
+}
+
+
+const groov_event_stack_t = StructType();
 groov_event_stack_t.defineProperty('len', ref.types.int);
-groov_event_stack_t.defineProperty('events', ref.refType(groov_event_t));
+groov_event_stack_t.defineProperty('events', ref.refType(groov_events_t));
 
 
 const GROOV_EVENT_TYPE_CONNECT = 1;
@@ -76,7 +85,7 @@ describe('socket loop', () => {
 
       const stack = lib.groov_read_incoming_events();
 
-      if (stack.deref().len == 1 && stack.deref().events.deref().type == GROOV_EVENT_TYPE_CONNECT) {
+      if (stack.deref().len == 1 && stack.deref().events.deref().i0.type == GROOV_EVENT_TYPE_CONNECT) {
         server.close();
         clearInterval(intervalId);
         done();
@@ -114,7 +123,7 @@ describe('socket loop', () => {
 
       const stack = lib.groov_read_incoming_events();
 
-      if (stack.deref().len > 0 && stack.deref().events.deref().type == GROOV_EVENT_TYPE_HANDSHAKE) {
+      if (stack.deref().len > 0 && stack.deref().events.deref().i0.type == GROOV_EVENT_TYPE_HANDSHAKE) {
         io.close();
         clearInterval(intervalId);
         done();
