@@ -90,11 +90,6 @@ typedef struct groov_message_event {
 
 void groov_init(groov_config_t *);
 
-// Contract
-
-void groov_stream_to_contract_parser(char byte);
-
-
 // Events
 
 void groov_init_event_stack(groov_event_stack_t *, uv_buf_t *, char [GROOV_EVENT_MAX_STACK_SIZE][GROOV_EVENT_SIZE]);

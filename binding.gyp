@@ -7,7 +7,6 @@
       'sources': [
         './deps/slre/slre.c',
         './src/boot.c',
-        './src/contract.c',
         './src/event.c',
         './src/handshake.c',
         './src/incoming.c',
