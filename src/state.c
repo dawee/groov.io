@@ -31,6 +31,7 @@ void groov_stream_by_state(char * data, ssize_t size) {
         groov_stream_to_handshake_parser(byte);
         break;
       case GROOV_STATE_HANDSHAKE_RECEIVED:
+        groov_stream_to_ws_packet_parser(byte);
         break;
       default:
         break;

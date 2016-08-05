@@ -12,6 +12,7 @@
         './src/incoming.c',
         './src/loop.c',
         './src/outgoing.c',
+        './src/packet.c',
         './src/serializer.c',
         './src/state.c',
       ],

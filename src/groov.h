@@ -18,6 +18,8 @@
 #define GROOV_MAX_HOST_NAME_SIZE 255
 #define GROOV_MAX_HANDSHAKE_SIZE 512
 #define GROOV_MAX_CONTRACT_SIZE 1024
+#define GROOV_MAX_EXTENDED_LEN 5
+#define GROOV_MAX_PAYLOAD_LEN 131000
 
 
 // Config type
@@ -41,6 +43,14 @@ typedef struct groov_event_stack {
   int len;
   groov_event_t * events;
 } groov_event_stack_t;
+
+// WS Packet type
+
+typedef struct groov_ws_packet {
+  char opcode;
+  unsigned long len;
+  char payload[GROOV_MAX_PAYLOAD_LEN];
+} groov_ws_packet_t;
 
 /*
  * Events types
@@ -79,7 +89,7 @@ typedef struct groov_message_event {
 
 #define GROOV_STATE_BOOT 0
 #define GROOV_STATE_CONNECTED 1
- #define GROOV_STATE_HANDSHAKE_RECEIVED 2
+#define GROOV_STATE_HANDSHAKE_RECEIVED 2
 
 
 /*
