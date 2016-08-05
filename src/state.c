@@ -16,6 +16,7 @@ void groov_update_state(groov_event_t * event) {
     groov_reset_handshake_parser();
   } else if (state == GROOV_STATE_CONNECTED && groov_read_handshake_event(event, &handshake_event)) {
     state = GROOV_STATE_HANDSHAKE_RECEIVED;
+    groov_reset_ws_packet_parser();
   }
 }
 

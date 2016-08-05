@@ -3,9 +3,6 @@
 #include <string.h>
 
 
-static uv_buf_t event_buf;
-
-
 void groov_init_event_stack(groov_event_stack_t * stack, uv_buf_t * stack_bufs, char stack_memory[GROOV_EVENT_MAX_STACK_SIZE][GROOV_EVENT_SIZE]) {
   int index = 0;
 
