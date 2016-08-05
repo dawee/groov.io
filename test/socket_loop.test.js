@@ -41,6 +41,37 @@ const GROOV_EVENT_TYPE_CONNECT = 1;
 const GROOV_EVENT_TYPE_HANDSHAKE = 2;
 
 
+class EventLoop {
+
+  constructor(lib) {
+    this.lib = lib;
+    this.listeners = {};
+  }
+
+  on(eventType, handler) {
+    this.listeners[eventType] = handler;
+  }
+
+  run() {
+    this.lib.groov_run_loop_step();
+    const stack = this.lib.groov_read_incoming_events();
+
+    for (let eventIndex = 0; eventIndex < stack.deref().len; ++eventIndex) {
+      const event = stack.deref().events.deref()[`i${eventIndex}`];
+
+      if (event.type in this.listeners) this.listeners[event.type](event);
+    }
+  }
+
+  start() {
+    this.intervalId = setInterval(this.run.bind(this), 0);
+  }
+
+  stop() {
+    clearInterval(this.intervalId);
+  }
+}
+
 describe('socket loop', () => {
 
   const HOST_ADDRESS = '127.0.0.1';
@@ -48,6 +79,7 @@ describe('socket loop', () => {
   const HOST_PORT = 3000;
   let lib;
   let config;
+  let eventLoop;
 
   beforeEach(() => {
     const hostNameBuf = new Buffer(HOST_ADDRESS);
@@ -65,6 +97,8 @@ describe('socket loop', () => {
         'groov_run_loop_step': ['void', []],
       }
     );
+
+    eventLoop = new EventLoop(lib);
   });
 
   it('should connect to server', (done) => {
@@ -80,54 +114,44 @@ describe('socket loop', () => {
     const server = net.createServer(() => {}).listen(HOST_PORT);
 
     lib.groov_init(config.ref());
-    const intervalId = setInterval(() => {
-      lib.groov_run_loop_step();
 
-      const stack = lib.groov_read_incoming_events();
+    eventLoop.on(GROOV_EVENT_TYPE_CONNECT, () => {
+      eventLoop.stop();
+      server.close();
+      done();
+    });
 
-      if (stack.deref().len == 1 && stack.deref().events.deref().i0.type == GROOV_EVENT_TYPE_CONNECT) {
-        server.close();
-        clearInterval(intervalId);
-        done();
-      }
-    }, 0);
+    eventLoop.start();
   });
 
 
   it('should send an handshake request', (done) => {
     const io = socketIO();
-    let intervalId;
 
     io.listen(HOST_PORT);
-
     lib.groov_init(config.ref());
 
     io.on('connect', () => {
+      eventLoop.stop();
       io.close();
-      clearInterval(intervalId);
       done();
     });
 
-    intervalId = setInterval(lib.groov_run_loop_step, 0);
+    eventLoop.start();
   });
 
   it('should received an handshake event', (done) => {
     const io = socketIO();
 
     io.listen(HOST_PORT);
-
     lib.groov_init(config.ref());
 
-    const intervalId = setInterval(() => {
-      lib.groov_run_loop_step();
+    eventLoop.on(GROOV_EVENT_TYPE_HANDSHAKE, () => {
+      eventLoop.stop();
+      io.close();
+      done();
+    });
 
-      const stack = lib.groov_read_incoming_events();
-
-      if (stack.deref().len > 0 && stack.deref().events.deref().i0.type == GROOV_EVENT_TYPE_HANDSHAKE) {
-        io.close();
-        clearInterval(intervalId);
-        done();
-      }
-    }, 0);
+    eventLoop.start();
   });
 });
