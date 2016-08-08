@@ -146,7 +146,7 @@ void groov_parse_io_message(groov_ws_packet_t *);
 
 // Logger
 
-#define DEBUG_LOG(...) groov_log(__FILE__, __LINE__, __VA_ARGS__ )
+#define GROOV_DEBUG_LOG(...) groov_log(__FILE__, __LINE__, __VA_ARGS__ )
 
 void groov_init_logger(groov_config_t *);
 void groov_log(char* filename, int line, char *fmt,...);
