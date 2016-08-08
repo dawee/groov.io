@@ -39,3 +39,8 @@ void groov_write_incoming_handshake_event() {
   groov_handshake_event_t event;
   groov_write_event_to_stack(&stack, GROOV_EVENT_TYPE_HANDSHAKE, (char *) &event, sizeof(event));
 }
+
+void groov_write_incoming_io_connect_event(unsigned timeout) {
+  groov_io_connect_event_t event = {.timeout = timeout};
+  groov_write_event_to_stack(&stack, GROOV_EVENT_TYPE_IO_CONNECT, (char *) &event, sizeof(event));
+}

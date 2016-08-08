@@ -127,6 +127,7 @@ void groov_init_incoming_events(groov_config_t *);
 groov_event_stack_t * groov_read_incoming_events();
 void groov_write_incoming_connect_event(int);
 void groov_write_incoming_handshake_event();
+void groov_write_incoming_io_connect_event(unsigned);
 
 // Outgoing Events
 

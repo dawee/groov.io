@@ -4,6 +4,9 @@
       'dependencies': ['./deps/libuv/uv.gyp:libuv'],
       'target_name': 'libgroov',
       'type': 'shared_library',
+      'include_dirs': [
+        './deps/slre',
+      ],
       'sources': [
         './deps/slre/slre.c',
         './src/boot.c',
