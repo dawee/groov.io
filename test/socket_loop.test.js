@@ -1,3 +1,4 @@
+const fs = require('fs');
 const ffi = require('ffi');
 const ref = require('ref');
 const StructType = require('ref-struct');
@@ -67,11 +68,14 @@ class EventLoop {
 
   start() {
     this.intervalId = setInterval(this.run.bind(this), 0);
+    this.logger = fs.createReadStream('groov.log');
+    this.logger.pipe(process.stdout);
   }
 
   stop() {
     this.stopped = true;
     clearInterval(this.intervalId);
+    this.logger.close();
   }
 }
 

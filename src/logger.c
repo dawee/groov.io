@@ -9,7 +9,7 @@
 static FILE * log_file;
 
 void groov_init_logger(groov_config_t * config) {
-  log_file = fopen ("groov.log", "a");
+  log_file = fopen ("groov.log", "w");
 }
 
 void groov_log(char * filename, int line, char * fmt,...) {

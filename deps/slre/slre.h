@@ -22,8 +22,8 @@
  * Please refer to README.md for a detailed reference.
  */
 
-#ifndef SLRE_HEADER_DEFINED
-#define SLRE_HEADER_DEFINED
+#ifndef CS_SLRE_SLRE_H_
+#define CS_SLRE_SLRE_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,8 +34,13 @@ struct slre_cap {
   int len;
 };
 
+
 int slre_match(const char *regexp, const char *buf, int buf_len,
-               struct slre_cap *caps, int num_caps);
+               struct slre_cap *caps, int num_caps, int flags);
+
+/* Possible flags for slre_match() */
+enum { SLRE_IGNORE_CASE = 1 };
+
 
 /* slre_match() failure codes */
 #define SLRE_NO_MATCH               -1
@@ -52,4 +57,4 @@ int slre_match(const char *regexp, const char *buf, int buf_len,
 }
 #endif
 
-#endif  /* SLRE_HEADER_DEFINED */
+#endif /* CS_SLRE_SLRE_H_ */
