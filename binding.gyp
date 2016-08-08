@@ -14,6 +14,7 @@
         './src/handshake.c',
         './src/incoming.c',
         './src/io.c',
+        './src/logger.c',
         './src/loop.c',
         './src/outgoing.c',
         './src/packet.c',
