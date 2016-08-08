@@ -21,12 +21,12 @@ static void groov_ws_packet__switch_state(groov_ws_packet__state_t new_state) {
 }
 
 static void groov_ws_packet__parse_opcode(char byte) {
-  packet.opcode = byte & 0x00001111;
+  packet.opcode = byte & 0x0F;
   groov_ws_packet__switch_state(PAYLOAD_LEN);
 }
 
 static void groov_ws_packet__parse_payload_len(char byte) {
-  packet.len = 86;//0 + (byte & 0x01111111);
+  packet.len = byte & 0x7F;
 
   if (packet.len < 126) {
     groov_ws_packet__switch_state(PAYLOAD);
