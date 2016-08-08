@@ -10,10 +10,10 @@
         './src/event.c',
         './src/handshake.c',
         './src/incoming.c',
+        './src/io.c',
         './src/loop.c',
         './src/outgoing.c',
         './src/packet.c',
-        './src/serializer.c',
         './src/state.c',
       ],
       'conditions': [

@@ -53,7 +53,7 @@ static void groov_ws_packet__parse_payload(char byte) {
   if (cursor == packet.len) {
     if (cursor < GROOV_MAX_PAYLOAD_LEN) packet.payload[cursor] = 0;
 
-    groov_write_incoming_packet_event(&packet);
+    groov_parse_io_message(&packet);
     groov_reset_ws_packet_parser();
   }
 }
