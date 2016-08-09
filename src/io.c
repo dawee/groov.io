@@ -6,12 +6,16 @@
 #include <slre.h>
 
 static char const IO_PACKET_TYPE_CONNECT = '0';
-static char const IO_PACKET_TYPE_PONG = '2';
-static char const IO_PACKET_TYPE_PING = '4';
+static char const IO_PACKET_TYPE_CLOSE = '1';
+static char const IO_PACKET_TYPE_PING = '2';
+static char const IO_PACKET_TYPE_PONG = '3';
+static char const IO_PACKET_TYPE_MESSAGE = '4';
+
+static const char * ping_name = "groov";
 
 static groov_ws_packet_header_t packet_header;
-static groov_ws_packet_ext16_header_t packet_header_ext16;
-static groov_ws_packet_ext64_header_t packet_header_ext64;
+// static groov_ws_packet_ext16_header_t packet_header_ext16;
+// static groov_ws_packet_ext64_header_t packet_header_ext64;
 
 static groov_message_event_t outgoing;
 
@@ -25,7 +29,7 @@ static void groov_io__serialize_message(char cmd, char * message, uint64_t conte
   uint64_t header_size = sizeof(packet_header);
 
   packet_header.reserved_and_opcode = fin + opcode;
-  packet_header.mask_and_len = ((char) len) + 1 + 0x80;
+  packet_header.mask_and_len = ((char) len) | mask;
   packet_header.masking_key[0] = 0x88;
   packet_header.masking_key[1] = 0x77;
   packet_header.masking_key[2] = 0x66;
@@ -47,7 +51,6 @@ static void groov_io__serialize_message(char cmd, char * message, uint64_t conte
   groov_write_outgoing_message(&outgoing);
 }
 
-
 static void groov_io__parse_connect(char * message, size_t len) {
   const char * connect = "^{.*\"pingTimeout\":([0-9]+).*}$";
   char timeout_str[16];
@@ -55,8 +58,12 @@ static void groov_io__parse_connect(char * message, size_t len) {
 
   if (slre_match(connect, message, len, caps, 1, 0) >= 0) {
     sprintf(timeout_str, "%.*s", caps[0].len, caps[0].ptr);
-    groov_write_incoming_io_connect_event(atoi(timeout_str));
+    groov_write_incoming_io_open_event(atoi(timeout_str));
   }
+}
+
+void groov_send_io_ping() {
+  groov_io__serialize_message(IO_PACKET_TYPE_PING, (char *) ping_name, strlen(ping_name));
 }
 
 void groov_parse_io_message(groov_ws_packet_t * packet) {
@@ -66,7 +73,7 @@ void groov_parse_io_message(groov_ws_packet_t * packet) {
 
   if (io_cmd == IO_PACKET_TYPE_CONNECT) {
     groov_io__parse_connect(&(packet->payload[1]), packet->len - 1);
-  } else if (io_cmd == IO_PACKET_TYPE_PING) {
-    groov_io__serialize_message(IO_PACKET_TYPE_PONG, 0, 0);
+  } else if (io_cmd == IO_PACKET_TYPE_PONG) {
+    GROOV_DEBUG_LOG("Server sent pong !");
   }
 }

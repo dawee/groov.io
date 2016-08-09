@@ -42,6 +42,5 @@ void groov_write_outgoing_handshake_request() {
 }
 
 void groov_write_outgoing_message(groov_message_event_t * message) {
-  groov_serialize_handshake_request(message);
   groov_write_event_to_stack(&stack, GROOV_EVENT_TYPE_MESSAGE, message->base, message->len);
 }

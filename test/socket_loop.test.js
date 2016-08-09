@@ -40,7 +40,7 @@ groov_event_stack_t.defineProperty('events', ref.refType(groov_events_t));
 
 const GROOV_EVENT_TYPE_CONNECT = 1;
 const GROOV_EVENT_TYPE_HANDSHAKE = 2;
-const GROOV_EVENT_TYPE_IO_CONNECT = 3;
+const GROOV_EVENT_TYPE_IO_OPEN = 3;
 
 
 class EventLoop {
@@ -50,7 +50,7 @@ class EventLoop {
     this.listeners = {};
   }
 
-  on(eventType, handler) {
+  once(eventType, handler) {
     this.listeners[eventType] = handler;
   }
 
@@ -61,7 +61,11 @@ class EventLoop {
     for (let eventIndex = 0; eventIndex < stack.deref().len; ++eventIndex) {
       const event = stack.deref().events.deref()[`i${eventIndex}`];
 
-      if (event.type in this.listeners) this.listeners[event.type](event);
+      if (event.type in this.listeners) {
+        this.listeners[event.type](event);
+        delete this.listeners[event.type];
+      }
+
       if (this.stopped) break;
     }
   }
@@ -71,8 +75,10 @@ class EventLoop {
   }
 
   stop() {
-    this.stopped = true;
-    clearInterval(this.intervalId);
+    setTimeout(() => {
+      this.stopped = true;
+      clearInterval(this.intervalId);
+    }, 100);
   }
 }
 
@@ -119,7 +125,7 @@ describe('socket loop', () => {
 
     lib.groov_init(config.ref());
 
-    eventLoop.on(GROOV_EVENT_TYPE_CONNECT, () => {
+    eventLoop.once(GROOV_EVENT_TYPE_CONNECT, () => {
       eventLoop.stop();
       server.close();
       done();
@@ -150,7 +156,7 @@ describe('socket loop', () => {
     io.listen(HOST_PORT);
     lib.groov_init(config.ref());
 
-    eventLoop.on(GROOV_EVENT_TYPE_HANDSHAKE, () => {
+    eventLoop.once(GROOV_EVENT_TYPE_HANDSHAKE, () => {
       eventLoop.stop();
       io.close();
       done();
@@ -165,7 +171,7 @@ describe('socket loop', () => {
     io.listen(HOST_PORT);
     lib.groov_init(config.ref());
 
-    eventLoop.on(GROOV_EVENT_TYPE_IO_CONNECT, () => {
+    eventLoop.once(GROOV_EVENT_TYPE_IO_OPEN, () => {
       eventLoop.stop();
       io.close();
       done();
