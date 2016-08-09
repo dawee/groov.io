@@ -1,7 +1,9 @@
 #include "groov.h"
-
+#include <time.h>
 
 void groov_init(groov_config_t * config) {
+  srand(time(NULL));
+
   groov_init_loop(config);
   groov_init_logger(config);
   groov_init_incoming_events(config);
