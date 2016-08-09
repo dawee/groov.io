@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <slre.h>
+#include <time.h>
+
 
 static char const IO_PACKET_TYPE_CONNECT = '0';
 static char const IO_PACKET_TYPE_CLOSE = '1';
@@ -11,6 +13,7 @@ static char const IO_PACKET_TYPE_PING = '2';
 static char const IO_PACKET_TYPE_PONG = '3';
 static char const IO_PACKET_TYPE_MESSAGE = '4';
 
+static const char * masking_key_charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 static const char * ping_name = "groov";
 
 static groov_ws_packet_header_t packet_header;
@@ -18,6 +21,16 @@ static groov_ws_packet_header_t packet_header;
 // static groov_ws_packet_ext64_header_t packet_header_ext64;
 
 static groov_message_event_t outgoing;
+
+static void groov_io__feed_masking_key(char * masking_key) {
+  size_t index = 0;
+  int key = 0;
+
+  for (index = 0; index < 4; ++index) {
+    key = rand() % (int) (sizeof(masking_key_charset) - 1);
+    masking_key[index] = masking_key_charset[key];
+  }
+}
 
 static void groov_io__serialize_message(char cmd, char * message, uint64_t content_len) {
   char fin = 0x80;
@@ -30,10 +43,7 @@ static void groov_io__serialize_message(char cmd, char * message, uint64_t conte
 
   packet_header.reserved_and_opcode = fin + opcode;
   packet_header.mask_and_len = ((char) len) | mask;
-  packet_header.masking_key[0] = 0x88;
-  packet_header.masking_key[1] = 0x77;
-  packet_header.masking_key[2] = 0x66;
-  packet_header.masking_key[3] = 0x55;
+  groov_io__feed_masking_key(packet_header.masking_key);
 
   memcpy(outgoing.base, (char *) &packet_header, header_size);
   outgoing.len = header_size + len;
