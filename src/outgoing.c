@@ -38,5 +38,10 @@ groov_event_stack_t * groov_read_outgoing_events() {
 
 void groov_write_outgoing_handshake_request() {
   groov_serialize_handshake_request(&message_buf);
-  groov_write_event_to_stack(&stack, GROOV_EVENT_TYPE_MESSAGE, message_buf.base, message_buf.len);
+  groov_write_outgoing_message(&message_buf);
+}
+
+void groov_write_outgoing_message(groov_message_event_t * message) {
+  groov_serialize_handshake_request(message);
+  groov_write_event_to_stack(&stack, GROOV_EVENT_TYPE_MESSAGE, message->base, message->len);
 }

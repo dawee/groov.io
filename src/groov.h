@@ -53,6 +53,33 @@ typedef struct groov_ws_packet {
   char payload[GROOV_MAX_PAYLOAD_LEN];
 } groov_ws_packet_t;
 
+// WS Outgoing Packet header type
+
+typedef struct groov_ws_packet_header {
+  char reserved_and_opcode;
+  char mask_and_len;
+  char masking_key[4];
+} groov_ws_packet_header_t;
+
+// WS Outgoing Packet header (Extended 16 bits len) type
+
+typedef struct groov_ws_packet_ext16_header {
+  char reserved_and_opcode;
+  char mask_and_len;
+  uint16_t extended_len;
+  char masking_key[4];
+} groov_ws_packet_ext16_header_t;
+
+// WS Outgoing Packet header (Extended 64 bits len) type
+
+typedef struct groov_ws_packet_ext64_header {
+  char reserved_and_opcode;
+  char mask_and_len;
+  uint64_t extended_len;
+  char masking_key[4];
+} groov_ws_packet_ext64_header_t;
+
+
 /*
  * Events types
  */
@@ -86,7 +113,7 @@ typedef struct groov_io_connect_event {
 
 #define GROOV_EVENT_TYPE_MESSAGE 100
 typedef struct groov_message_event {
-  size_t len;
+  uint64_t len;
   char base[GROOV_MAX_MESSAGE_SIZE];
 } groov_message_event_t;
 
@@ -98,6 +125,7 @@ typedef struct groov_message_event {
 #define GROOV_STATE_BOOT 0
 #define GROOV_STATE_CONNECTED 1
 #define GROOV_STATE_HANDSHAKE_RECEIVED 2
+#define GROOV_STATE_IO_CONNECTED 3
 
 
 /*
@@ -115,6 +143,7 @@ int groov_write_event_to_stack(groov_event_stack_t *, int, char *, size_t);
 groov_event_stack_t * groov_read_event_stack(groov_event_stack_t *, groov_event_stack_t *);
 int groov_read_connect_event(groov_event_t *, groov_connect_event_t *);
 int groov_read_handshake_event(groov_event_t *, groov_handshake_event_t *);
+int groov_read_io_connect_event(groov_event_t *, groov_io_connect_event_t *);
 
 // Handshake parser
 
@@ -134,6 +163,7 @@ void groov_write_incoming_io_connect_event(unsigned);
 void groov_init_outgoing_events(groov_config_t *);
 void groov_write_outgoing_handshake_request();
 groov_event_stack_t * groov_read_outgoing_events();
+void groov_write_outgoing_message(groov_message_event_t *);
 
 // Loop
 

@@ -6,7 +6,46 @@
 #include <slre.h>
 
 static char const IO_PACKET_TYPE_CONNECT = '0';
-static char const IO_PACKET_TYPE_ERROR = '4';
+static char const IO_PACKET_TYPE_PONG = '2';
+static char const IO_PACKET_TYPE_PING = '4';
+
+static groov_ws_packet_header_t packet_header;
+static groov_ws_packet_ext16_header_t packet_header_ext16;
+static groov_ws_packet_ext64_header_t packet_header_ext64;
+
+static groov_message_event_t outgoing;
+
+static void groov_io__serialize_message(char cmd, char * message, uint64_t content_len) {
+  char fin = 0x80;
+  char opcode = 0x01;
+  char mask = 0x80;
+  char current_mask;
+  uint64_t index = 0;
+  uint64_t len = content_len + 1;
+  uint64_t header_size = sizeof(packet_header);
+
+  packet_header.reserved_and_opcode = fin + opcode;
+  packet_header.mask_and_len = ((char) len) + 1 + 0x80;
+  packet_header.masking_key[0] = 0x88;
+  packet_header.masking_key[1] = 0x77;
+  packet_header.masking_key[2] = 0x66;
+  packet_header.masking_key[3] = 0x55;
+
+  memcpy(outgoing.base, (char *) &packet_header, header_size);
+  outgoing.len = header_size + len;
+
+  for (index = 0; index < len; ++index) {
+    current_mask = packet_header.masking_key[(index % 4)];
+    
+    if (index == 0) {
+      outgoing.base[header_size + index] = cmd ^ current_mask;
+    } else {
+      outgoing.base[header_size + index] = message[index - 1] ^ current_mask;
+    }
+  }
+
+  groov_write_outgoing_message(&outgoing);
+}
 
 
 static void groov_io__parse_connect(char * message, size_t len) {
@@ -27,5 +66,7 @@ void groov_parse_io_message(groov_ws_packet_t * packet) {
 
   if (io_cmd == IO_PACKET_TYPE_CONNECT) {
     groov_io__parse_connect(&(packet->payload[1]), packet->len - 1);
+  } else if (io_cmd == IO_PACKET_TYPE_PING) {
+    groov_io__serialize_message(IO_PACKET_TYPE_PONG, 0, 0);
   }
 }
