@@ -145,7 +145,7 @@ static void groov_ws_packet__serialize_ext64_packet(char * payload, uint64_t len
 }
 
 
-void groov_send_ws_message(char * payload, uint64_t len) {
+void groov_send_ws_packet(char * payload, uint64_t len) {
   if (len > WS_EXT_LEN_16_LIMIT) {
     groov_ws_packet__serialize_ext64_packet(payload, len);
   } else if (len > WS_EXT_LEN_7_LIMIT) {

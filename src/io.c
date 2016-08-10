@@ -29,7 +29,7 @@ static void groov_io__parse_connect(char * message, size_t len) {
 static void groov_io__send_message(char cmd, char * message, uint64_t len) {
   outgoing_message[0] = cmd;
   memcpy(&(outgoing_message[1]), message, len);
-  groov_send_ws_message(outgoing_message, len + 1);
+  groov_send_ws_packet(outgoing_message, len + 1);
 }
 
 void groov_send_io_ping() {
