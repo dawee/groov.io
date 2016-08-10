@@ -56,7 +56,7 @@ static void on_getaddrinfo(uv_getaddrinfo_t * req, int status, struct addrinfo *
 }
 
 void groov_connect() {
-  sprintf(port_str, "%d", 3000);
+  sprintf(port_str, "%d", groov_config.host_port);
   uv_getaddrinfo(&loop, &getaddrinfo_req, on_getaddrinfo, groov_config.host_name, port_str, NULL);
 }
 
