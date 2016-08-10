@@ -158,6 +158,7 @@ void groov_write_outgoing_blob_event(groov_blob_event_t *);
 // Loop
 
 void groov_init_loop(groov_config_t *);
+void groov_read_outgoing_loop_events();
 void groov_run_loop_step();
 
 // IO
@@ -189,5 +190,6 @@ void groov_serialize_handshake_request(groov_blob_event_t *);
 void groov_init_state(groov_config_t *);
 void groov_update_state(groov_event_t *);
 void groov_stream_by_state(char *, ssize_t);
+void groov_prepare_step_by_state();
 
 #endif

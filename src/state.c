@@ -32,6 +32,10 @@ void groov_update_state(groov_event_t * event) {
   }
 }
 
+void groov_prepare_step_by_state() {
+  if (state >= CONNECTED) groov_read_outgoing_loop_events();
+}
+
 void groov_stream_by_state(char * data, ssize_t size) {
   unsigned index = 0;
   char byte = 0;

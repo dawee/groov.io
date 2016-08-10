@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 
-static char connected = 0;
 static char sending = 0;
 
 static groov_config_t groov_config;
@@ -47,7 +46,6 @@ static void groov_loop__on_connect(uv_connect_t * new_connection, int status) {
   groov_write_incoming_connect_event(status == 0);
 
   if (status == 0) {
-    connected = 1;
     uv_read_start(connection.handle, groov_loop__alloc_buffer, groov_loop__on_read);
   }
 }
@@ -64,7 +62,16 @@ static void groov_loop__on_write(uv_write_t* req, int status) {
   }
 }
 
-static void groov_loop__read_outgoing_events() {
+static void groov_loop__on_getaddrinfo(uv_getaddrinfo_t * req, int status, struct addrinfo * res) {
+  address = *(res->ai_addr);
+
+  uv_tcp_connect(&connection, &client, &address, groov_loop__on_connect);
+  uv_freeaddrinfo(res);
+}
+
+void groov_read_outgoing_loop_events() {
+  if (sending) return;
+
   event_stack = groov_read_outgoing_events();
   
   if (event_stack->len == 0) return;
@@ -72,13 +79,6 @@ static void groov_loop__read_outgoing_events() {
   sending = 1;
   writing_index = 0;
   uv_write(&write_request, connection.handle, event_stack->events[writing_index].data, 1, groov_loop__on_write);
-}
-
-static void groov_loop__on_getaddrinfo(uv_getaddrinfo_t * req, int status, struct addrinfo * res) {
-  address = *(res->ai_addr);
-
-  uv_tcp_connect(&connection, &client, &address, groov_loop__on_connect);
-  uv_freeaddrinfo(res);
 }
 
 void groov_connect() {
@@ -94,6 +94,6 @@ void groov_init_loop(groov_config_t * config) {
 }
 
 void groov_run_loop_step() {
-  if (connected && !sending) groov_loop__read_outgoing_events();
+  groov_prepare_step_by_state();
   uv_run(&loop, UV_RUN_NOWAIT);
 }
