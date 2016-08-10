@@ -130,9 +130,9 @@ void groov_init(groov_config_t *);
 void groov_init_event_stack(groov_event_stack_t *, uv_buf_t *, char [GROOV_EVENT_MAX_STACK_SIZE][GROOV_EVENT_SIZE]);
 int groov_write_event_to_stack(groov_event_stack_t *, int, char *, size_t);
 groov_event_stack_t * groov_read_event_stack(groov_event_stack_t *, groov_event_stack_t *);
-int groov_read_connect_event(groov_event_t *, groov_connect_event_t *);
-int groov_read_handshake_event(groov_event_t *, groov_handshake_event_t *);
-int groov_read_io_open_event(groov_event_t *, groov_io_open_event_t *);
+groov_connect_event_t * groov_read_connect_event(groov_event_t *);
+groov_handshake_event_t * groov_read_handshake_event(groov_event_t *);
+groov_io_open_event_t * groov_read_io_open_event(groov_event_t *);
 
 // Handshake parser
 
