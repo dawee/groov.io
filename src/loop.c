@@ -2,18 +2,37 @@
 
 #include <stdio.h>
 
+static char connected = 0;
+static char sending = 0;
+
 static groov_config_t groov_config;
-static char port_str[8];
 static uv_loop_t loop;
+
+/*
+ * Writing stack
+ */
+
+static groov_event_stack_t * event_stack;
+static unsigned writing_index = 0;
+
+/*
+ * TCP Socket
+ */
+
+static char port_str[8];
 static uv_getaddrinfo_t getaddrinfo_req;
 static uv_tcp_t client;
 static uv_connect_t connection;
 static struct sockaddr_in address;
-static int write_requests_count = 0;
-static uv_write_t write_requests[GROOV_EVENT_MAX_STACK_SIZE];
-static int connected = 0;
+
+/*
+ * Buf
+ */
+
+static uv_write_t write_request;
 static char read_buf_base[GROOV_MAX_MESSAGE_SIZE];
 static uv_buf_t read_buf = {.base = read_buf_base};
+
 
 static void groov_loop__alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
   read_buf.len = GROOV_MAX_MESSAGE_SIZE;
@@ -34,18 +53,25 @@ static void groov_loop__on_connect(uv_connect_t * new_connection, int status) {
 }
 
 static void on_write(uv_write_t* req, int status) {
-  write_requests_count--;
+  if (status != 0) return;
+
+  writing_index++;
+
+  if (writing_index >= event_stack->len) {
+    sending = 0;
+  } else {
+    uv_write(&write_request, connection.handle, event_stack->events[writing_index].data, 1, on_write);
+  }
 }
 
-static void groov_loop__write_requests() {
-  int index = 0;
-  groov_event_stack_t * event_stack = groov_read_outgoing_events();
+static void groov_loop__read_outgoing_events() {
+  event_stack = groov_read_outgoing_events();
+  
+  if (event_stack->len == 0) return;
 
-  for (index = 0; index < event_stack->len; ++index) {
-    uv_write(&(write_requests[index]), connection.handle, event_stack->events[index].data, 1, on_write);
-  }
-
-  write_requests_count = event_stack->len;
+  sending = 1;
+  writing_index = 0;
+  uv_write(&write_request, connection.handle, event_stack->events[writing_index].data, 1, on_write);
 }
 
 static void on_getaddrinfo(uv_getaddrinfo_t * req, int status, struct addrinfo * res) {
@@ -68,6 +94,6 @@ void groov_init_loop(groov_config_t * config) {
 }
 
 void groov_run_loop_step() {
-  if (connected == 1 && write_requests_count == 0) groov_loop__write_requests();
+  if (connected && !sending) groov_loop__read_outgoing_events();
   uv_run(&loop, UV_RUN_NOWAIT);
 }
