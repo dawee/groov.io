@@ -1,6 +1,7 @@
 const fs = require('fs');
 const ffi = require('ffi');
 const ref = require('ref');
+const ArrayType = require('ref-array');
 const StructType = require('ref-struct');
 const path = require('path');
 const socketIO = require('socket.io');
@@ -37,9 +38,20 @@ groov_event_stack_t.defineProperty('len', ref.types.int);
 groov_event_stack_t.defineProperty('events', ref.refType(groov_events_t));
 
 
+const groov_logging_event_t = StructType();
+groov_logging_event_t.defineProperty('level', ref.types.char);
+groov_logging_event_t.defineProperty('len', ref.types.uint);
+
+for (let i = 0; i < 100; ++i) {
+  groov_logging_event_t.defineProperty(`base-${i}`, ref.types.char);
+}
+
+
 const GROOV_EVENT_TYPE_CONNECT = 1;
 const GROOV_EVENT_TYPE_HANDSHAKE = 2;
 const GROOV_EVENT_TYPE_IO_OPEN = 3;
+
+const GROOV_EVENT_TYPE_LOGGING = 200;
 
 const HOST_NAME = 'localhost';
 const HOST_PORT = 3000;
@@ -66,6 +78,17 @@ class EventLoop {
 
     for (let eventIndex = 0; eventIndex < stack.deref().len; ++eventIndex) {
       const event = stack.deref().events.deref()[`i${eventIndex}`];
+
+      if (event.type == GROOV_EVENT_TYPE_LOGGING) {
+        const logging_event = this.lib.groov_read_logging_event(event.ref()).deref();
+        const charArray = [];
+        for (let i = 0; i < logging_event.len && i < 100; ++i) {
+          charArray.push(logging_event[`base-${i}`]);
+        }
+
+        console.log(new Buffer(charArray).toString());
+      }
+
 
       if (event.type in this.listeners) {
         this.listeners[event.type](event);
@@ -96,6 +119,7 @@ describe('socket loop', () => {
       path.join(__dirname, '..', 'build', 'Release', 'groov.so'), {
         'groov_init': ["void", [ref.refType(groov_config_t)]],
         'groov_read_incoming_events': [ref.refType(groov_event_stack_t), []],
+        'groov_read_logging_event': [ref.refType(groov_logging_event_t), [ref.refType(groov_event_t)]],
         'groov_run_loop_step': ['void', []],
         'groov_connect': ['void', []],
       }

@@ -6,20 +6,17 @@
 #include <string.h>
 #include <stdlib.h>
 
-static FILE * log_file;
+static char log_message[GROOV_MAX_BLOB_SIZE];
 
 void groov_init_logger(groov_config_t * config) {
-  log_file = fopen ("groov.log", "w");
 }
 
 void groov_log(char * filename, int line, char * fmt,...) {
   va_list list;
 
   va_start(list, fmt);
-  vfprintf(log_file, fmt, list);
-  fflush(log_file);
-  fputc( '\n', log_file );
-  fflush(log_file);
+  sprintf(log_message, fmt, list);
+  groov_write_incoming_logging_event(0, log_message);
   va_end( list );
 }
 

@@ -5,6 +5,7 @@
 static groov_connect_event_t connect_event;
 static groov_handshake_event_t handshake_event;
 static groov_io_open_event_t io_open_event;
+static groov_logging_event_t logging_event;
 
 void groov_init_event_stack(groov_event_stack_t * stack, uv_buf_t * stack_bufs, char stack_memory[GROOV_EVENT_MAX_STACK_SIZE][GROOV_EVENT_SIZE]) {
   int index = 0;
@@ -75,4 +76,12 @@ groov_io_open_event_t * groov_read_io_open_event(groov_event_t * event) {
 
   memcpy(&io_open_event, event->data->base, event->data->len);
   return &io_open_event;
+}
+
+groov_logging_event_t * groov_read_logging_event(groov_event_t * event) {
+  if (event->type != GROOV_EVENT_TYPE_LOGGING) return NULL;
+
+  memcpy(&logging_event, event->data->base, event->data->len);
+
+  return &logging_event;
 }

@@ -124,7 +124,7 @@ typedef struct groov_logging_event {
   char level;
   unsigned len;
   char base[GROOV_MAX_BLOB_SIZE];
-} groov_loggin_logging_t;
+} groov_logging_event_t;
 
 /*
  * API Declarations
@@ -156,6 +156,7 @@ groov_event_stack_t * groov_read_incoming_events();
 void groov_write_incoming_connect_event(int);
 void groov_write_incoming_handshake_event();
 void groov_write_incoming_io_open_event(unsigned);
+void groov_write_incoming_logging_event(char, char *);
 
 // Outgoing Events
 

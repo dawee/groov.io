@@ -44,3 +44,10 @@ void groov_write_incoming_io_open_event(unsigned timeout) {
   groov_io_open_event_t event = {.timeout = timeout};
   groov_write_event_to_stack(&stack, GROOV_EVENT_TYPE_IO_OPEN, (char *) &event, sizeof(event));
 }
+
+void groov_write_incoming_logging_event(char level, char * message) {
+  groov_logging_event_t event = {.level = level, .len = strlen(message)};
+
+  memcpy(event.base, message, event.len + 1);
+  groov_write_event_to_stack(&stack, GROOV_EVENT_TYPE_LOGGING, (char *) &event, sizeof(event));
+}
