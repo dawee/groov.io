@@ -21,7 +21,7 @@ static groov_ws_packet_t packet;
 static groov_ws_packet__state_t packet_state;
 static unsigned long cursor;
 static unsigned extended_bytes_count;
-static groov_message_event_t outgoing;
+static groov_blob_event_t outgoing;
 static const char * masking_key_charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 static groov_ws_packet_header_t packet_header;
@@ -154,7 +154,7 @@ void groov_send_ws_packet(char * payload, uint64_t len) {
     groov_ws_packet__serialize_packet(payload, len);
   }
 
-  groov_write_outgoing_message(&outgoing);
+  groov_write_outgoing_blob_event(&outgoing);
 }
 
 void groov_reset_ws_packet_parser() {

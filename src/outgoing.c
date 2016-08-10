@@ -24,7 +24,7 @@ static groov_event_stack_t stack_copy = {.len = 0, .events = stack_copy_events};
  * Message construction buffer
  */
 
-groov_message_event_t message_buf;
+groov_blob_event_t outgoing_blob;
 
 
 void groov_init_outgoing_events(groov_config_t * config) {
@@ -37,10 +37,10 @@ groov_event_stack_t * groov_read_outgoing_events() {
 }
 
 void groov_write_outgoing_handshake_request() {
-  groov_serialize_handshake_request(&message_buf);
-  groov_write_outgoing_message(&message_buf);
+  groov_serialize_handshake_request(&outgoing_blob);
+  groov_write_outgoing_blob_event(&outgoing_blob);
 }
 
-void groov_write_outgoing_message(groov_message_event_t * message) {
-  groov_write_event_to_stack(&stack, GROOV_EVENT_TYPE_MESSAGE, message->base, message->len);
+void groov_write_outgoing_blob_event(groov_blob_event_t * blob) {
+  groov_write_event_to_stack(&stack, GROOV_EVENT_TYPE_BLOB, blob->base, blob->len);
 }

@@ -13,7 +13,7 @@ static char const IO_PACKET_TYPE_PONG = '3';
 static char const IO_PACKET_TYPE_MESSAGE = '4';
 
 static const char * ping_name = "groov";
-static char outgoing_message[GROOV_MAX_MESSAGE_SIZE];
+static char outgoing_message[GROOV_MAX_BLOB_SIZE];
 
 static void groov_io__parse_connect(char * message, size_t len) {
   const char * connect = "^{.*\"pingTimeout\":([0-9]+).*}$";

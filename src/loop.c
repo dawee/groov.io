@@ -30,12 +30,12 @@ static struct sockaddr_in address;
  */
 
 static uv_write_t write_request;
-static char read_buf_base[GROOV_MAX_MESSAGE_SIZE];
+static char read_buf_base[GROOV_MAX_BLOB_SIZE];
 static uv_buf_t read_buf = {.base = read_buf_base};
 
 
 static void groov_loop__alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
-  read_buf.len = GROOV_MAX_MESSAGE_SIZE;
+  read_buf.len = GROOV_MAX_BLOB_SIZE;
   *buf = read_buf;
 }
 

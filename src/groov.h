@@ -13,7 +13,7 @@
 
 // Fixed memory
 
-#define GROOV_MAX_MESSAGE_SIZE 65536
+#define GROOV_MAX_BLOB_SIZE 65536
 #define GROOV_EVENT_SIZE 65536
 #define GROOV_EVENT_MAX_STACK_SIZE 100
 #define GROOV_MAX_HOST_NAME_SIZE 255
@@ -110,11 +110,11 @@ typedef struct groov_io_open_event {
 
 // Message Event
 
-#define GROOV_EVENT_TYPE_MESSAGE 100
-typedef struct groov_message_event {
+#define GROOV_EVENT_TYPE_BLOB 100
+typedef struct groov_blob_event {
   uint64_t len;
-  char base[GROOV_MAX_MESSAGE_SIZE];
-} groov_message_event_t;
+  char base[GROOV_MAX_BLOB_SIZE];
+} groov_blob_event_t;
 
 
 /*
@@ -153,7 +153,7 @@ void groov_write_incoming_io_open_event(unsigned);
 void groov_init_outgoing_events(groov_config_t *);
 void groov_write_outgoing_handshake_request();
 groov_event_stack_t * groov_read_outgoing_events();
-void groov_write_outgoing_message(groov_message_event_t *);
+void groov_write_outgoing_blob_event(groov_blob_event_t *);
 
 // Loop
 
@@ -182,7 +182,7 @@ void groov_send_ws_packet(char *, uint64_t);
 // Serializer
 
 void groov_init_serialize(groov_config_t *);
-void groov_serialize_handshake_request(groov_message_event_t *);
+void groov_serialize_handshake_request(groov_blob_event_t *);
 
 // State
 

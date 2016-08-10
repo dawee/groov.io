@@ -57,8 +57,8 @@ void groov_stream_to_handshake_parser(char byte) {
   }
 }
 
-void groov_serialize_handshake_request(groov_message_event_t * message) {
-  sprintf(message->base,
+void groov_serialize_handshake_request(groov_blob_event_t * blob) {
+  sprintf(blob->base,
     "%s\n%s\n%s\nHost: %s:%d\nSec-WebSocket-Version: %d\nSec-WebSocket-Key:%s\n\n",
     handshake_request_header,
     handshake_request_connection,
@@ -69,5 +69,5 @@ void groov_serialize_handshake_request(groov_message_event_t * message) {
     "MTMtMTQ2OTcwMDczOTcwNA=="
   );
 
-  message->len = strlen(message->base);
+  blob->len = strlen(blob->base);
 }
