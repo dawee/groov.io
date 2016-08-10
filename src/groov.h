@@ -14,13 +14,13 @@
 // Fixed memory
 
 #define GROOV_MAX_MESSAGE_SIZE 65536
-#define GROOV_EVENT_SIZE 131072
+#define GROOV_EVENT_SIZE 65536
 #define GROOV_EVENT_MAX_STACK_SIZE 100
 #define GROOV_MAX_HOST_NAME_SIZE 255
 #define GROOV_MAX_HANDSHAKE_SIZE 512
 #define GROOV_MAX_CONTRACT_SIZE 1024
 #define GROOV_MAX_EXTENDED_LEN 5
-#define GROOV_MAX_PAYLOAD_LEN 131000
+#define GROOV_MAX_PAYLOAD_LEN 65536
 
 
 // Config type
@@ -64,8 +64,8 @@ typedef struct groov_ws_packet_header {
 // WS Outgoing Packet header (Extended 16 bits len) type
 
 typedef struct groov_ws_packet_ext16_header {
-  char reserved_and_opcode;
-  char mask_and_len;
+  unsigned char reserved_and_opcode;
+  unsigned char mask_and_len;
   uint16_t extended_len;
   char masking_key[4];
 } groov_ws_packet_ext16_header_t;
@@ -73,8 +73,8 @@ typedef struct groov_ws_packet_ext16_header {
 // WS Outgoing Packet header (Extended 64 bits len) type
 
 typedef struct groov_ws_packet_ext64_header {
-  char reserved_and_opcode;
-  char mask_and_len;
+  unsigned char reserved_and_opcode;
+  unsigned char mask_and_len;
   uint64_t extended_len;
   char masking_key[4];
 } groov_ws_packet_ext64_header_t;
@@ -187,6 +187,7 @@ void groov_log(char* filename, int line, char *fmt,...);
 
 void groov_reset_ws_packet_parser();
 void groov_stream_to_ws_packet_parser(char);
+void groov_serialize_ws_message(char *, uint64_t);
 
 // Serializer
 

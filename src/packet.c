@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 typedef enum {
   OPCODE,
@@ -14,6 +15,12 @@ static groov_ws_packet_t packet;
 static groov_ws_packet__state_t packet_state;
 static unsigned long cursor;
 static unsigned extended_bytes_count;
+static groov_message_event_t outgoing;
+static const char * masking_key_charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+static groov_ws_packet_header_t packet_header;
+// static groov_ws_packet_ext16_header_t packet_header_ext16;
+// static groov_ws_packet_ext64_header_t packet_header_ext64;
 
 static void groov_ws_packet__switch_state(groov_ws_packet__state_t new_state) {
   packet_state = new_state;
@@ -59,6 +66,39 @@ static void groov_ws_packet__parse_payload(char byte) {
     groov_parse_io_message(&packet);
     groov_reset_ws_packet_parser();
   }
+}
+
+static void groov_ws_packet__feed_masking_key(char * masking_key) {
+  size_t index = 0;
+  int key = 0;
+
+  for (index = 0; index < 4; ++index) {
+    key = rand() % (int) (sizeof(masking_key_charset) - 1);
+    masking_key[index] = masking_key_charset[key];
+  }
+}
+
+void groov_serialize_ws_message(char * message, uint64_t len) {
+  char fin = 0x80;
+  char opcode = 0x01;
+  char mask = 0x80;
+  char current_mask;
+  uint64_t index = 0;
+  uint64_t header_size = sizeof(packet_header);
+
+  packet_header.reserved_and_opcode = fin + opcode;
+  packet_header.mask_and_len = ((char) len) | mask;
+  groov_ws_packet__feed_masking_key(packet_header.masking_key);
+
+  memcpy(outgoing.base, (char *) &packet_header, header_size);
+  outgoing.len = header_size + len;
+
+  for (index = 0; index < len; ++index) {
+    current_mask = packet_header.masking_key[(index % 4)];
+    outgoing.base[header_size + index] = message[index] ^ current_mask;
+  }
+
+  groov_write_outgoing_message(&outgoing);
 }
 
 void groov_reset_ws_packet_parser() {
