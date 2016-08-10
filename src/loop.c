@@ -23,7 +23,7 @@ static char port_str[8];
 static uv_getaddrinfo_t getaddrinfo_req;
 static uv_tcp_t client;
 static uv_connect_t connection;
-static struct sockaddr_in address;
+static struct sockaddr address;
 
 /*
  * Buf
@@ -75,9 +75,9 @@ static void groov_loop__read_outgoing_events() {
 }
 
 static void on_getaddrinfo(uv_getaddrinfo_t * req, int status, struct addrinfo * res) {
-  address = *((struct sockaddr_in *)res->ai_addr);
+  address = *(res->ai_addr);
 
-  uv_tcp_connect(&connection, &client, (const struct sockaddr*)&address, groov_loop__on_connect);
+  uv_tcp_connect(&connection, &client, &address, groov_loop__on_connect);
   uv_freeaddrinfo(res);
 }
 
