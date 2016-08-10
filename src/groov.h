@@ -187,7 +187,7 @@ void groov_log(char* filename, int line, char *fmt,...);
 
 void groov_reset_ws_packet_parser();
 void groov_stream_to_ws_packet_parser(char);
-void groov_serialize_ws_message(char *, uint64_t);
+void groov_send_ws_message(char *, uint64_t);
 
 // Serializer
 

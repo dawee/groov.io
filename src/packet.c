@@ -12,6 +12,8 @@ typedef enum {
   PAYLOAD,
 } groov_ws_packet__state_t;
 
+static unsigned WS_EXT_LEN_16_LIMIT = 65535;
+static unsigned WS_EXT_LEN_7_LIMIT = 125;
 static const char WS_OPCODE_TEXT = 0x01;
 static const char MASK_ON = 0x80;
 
@@ -23,8 +25,8 @@ static groov_message_event_t outgoing;
 static const char * masking_key_charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 static groov_ws_packet_header_t packet_header;
-// static groov_ws_packet_ext16_header_t packet_header_ext16;
-// static groov_ws_packet_ext64_header_t packet_header_ext64;
+static groov_ws_packet_ext16_header_t packet_header_ext16;
+static groov_ws_packet_ext64_header_t packet_header_ext64;
 
 static void groov_ws_packet__switch_state(groov_ws_packet__state_t new_state) {
   packet_state = new_state;
@@ -88,9 +90,9 @@ static void groov_ws_packet__feed_reserved_and_opcode(unsigned char * reserved_a
 }
 
 static void groov_ws_packet__feed_mask_and_len(unsigned char * mask_and_len, char mask, uint64_t len) {
-  if (len > 65535) {
+  if (len > WS_EXT_LEN_16_LIMIT) {
     *mask_and_len = 127 | mask;
-  } else if (len > 125) {
+  } else if (len > WS_EXT_LEN_7_LIMIT) {
     *mask_and_len = 126 | mask;
   } else {
     *mask_and_len = ((char) len) | mask;
@@ -111,13 +113,47 @@ static void groov_ws_packet__feed_outgoing(char * header, uint64_t header_size, 
   outgoing.len = header_size + len;
 }
 
-void groov_serialize_ws_message(char * payload, uint64_t len) {
+static void groov_ws_packet__serialize_packet(char * payload, uint64_t len) {
   uint64_t header_size = sizeof(packet_header);
 
   groov_ws_packet__feed_reserved_and_opcode(&(packet_header.reserved_and_opcode), WS_OPCODE_TEXT);
   groov_ws_packet__feed_mask_and_len(&(packet_header.mask_and_len), MASK_ON, len);  
   groov_ws_packet__feed_masking_key(packet_header.masking_key);
   groov_ws_packet__feed_outgoing((char *) &packet_header, header_size, payload, len, packet_header.masking_key);
+}
+
+static void groov_ws_packet__serialize_ext16_packet(char * payload, uint64_t len) {
+  uint64_t header_size = sizeof(packet_header_ext16);
+
+  packet_header_ext16.extended_len = len;
+
+  groov_ws_packet__feed_reserved_and_opcode(&(packet_header_ext16.reserved_and_opcode), WS_OPCODE_TEXT);
+  groov_ws_packet__feed_mask_and_len(&(packet_header_ext16.mask_and_len), MASK_ON, len);  
+  groov_ws_packet__feed_masking_key(packet_header_ext16.masking_key);
+  groov_ws_packet__feed_outgoing((char *) &packet_header_ext16, header_size, payload, len, packet_header_ext16.masking_key);
+}
+
+static void groov_ws_packet__serialize_ext64_packet(char * payload, uint64_t len) {
+  uint64_t header_size = sizeof(packet_header_ext64);
+
+  packet_header_ext64.extended_len = len;
+
+  groov_ws_packet__feed_reserved_and_opcode(&(packet_header_ext64.reserved_and_opcode), WS_OPCODE_TEXT);
+  groov_ws_packet__feed_mask_and_len(&(packet_header_ext64.mask_and_len), MASK_ON, len);  
+  groov_ws_packet__feed_masking_key(packet_header_ext64.masking_key);
+  groov_ws_packet__feed_outgoing((char *) &packet_header_ext64, header_size, payload, len, packet_header_ext64.masking_key);
+}
+
+
+void groov_send_ws_message(char * payload, uint64_t len) {
+  if (len > WS_EXT_LEN_16_LIMIT) {
+    groov_ws_packet__serialize_ext64_packet(payload, len);
+  } else if (len > WS_EXT_LEN_7_LIMIT) {
+    groov_ws_packet__serialize_ext16_packet(payload, len);
+  } else {
+    groov_ws_packet__serialize_packet(payload, len);
+  }
+
   groov_write_outgoing_message(&outgoing);
 }
 
