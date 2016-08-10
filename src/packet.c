@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 typedef enum {
@@ -71,7 +72,7 @@ static void groov_ws_packet__parse_payload(char byte) {
   }
 }
 
-static void groov_ws_packet__feed_masking_key(char * masking_key) {
+static void groov_ws_packet__feed_masking_key(char masking_key[4]) {
   size_t index = 0;
   int key = 0;
 
@@ -81,12 +82,12 @@ static void groov_ws_packet__feed_masking_key(char * masking_key) {
   }
 }
 
-static void groov_ws_packet__feed_reserved_and_opcode(char * reserved_and_opcode, char opcode) {
+static void groov_ws_packet__feed_reserved_and_opcode(unsigned char * reserved_and_opcode, char opcode) {
   char fin = 0x80;
   *reserved_and_opcode = fin + opcode;
 }
 
-static void groov_ws_packet__feed_mask_and_len(char * mask_and_len, char mask, uint64_t len) {
+static void groov_ws_packet__feed_mask_and_len(unsigned char * mask_and_len, char mask, uint64_t len) {
   if (len > 65535) {
     *mask_and_len = 127 | mask;
   } else if (len > 125) {
@@ -96,23 +97,27 @@ static void groov_ws_packet__feed_mask_and_len(char * mask_and_len, char mask, u
   }
 }
 
-void groov_serialize_ws_message(char * message, uint64_t len) {
+static void groov_ws_packet__feed_outgoing(char * header, uint64_t header_size, char * payload, uint64_t len, char * masking_key) {
   char current_mask;
   uint64_t index = 0;
+
+  memcpy(outgoing.base, header, header_size);
+
+  for (index = 0; index < len; ++index) {
+    current_mask = masking_key[(index % 4)];
+    outgoing.base[header_size + index] = payload[index] ^ current_mask;
+  }
+
+  outgoing.len = header_size + len;
+}
+
+void groov_serialize_ws_message(char * payload, uint64_t len) {
   uint64_t header_size = sizeof(packet_header);
 
   groov_ws_packet__feed_reserved_and_opcode(&(packet_header.reserved_and_opcode), WS_OPCODE_TEXT);
   groov_ws_packet__feed_mask_and_len(&(packet_header.mask_and_len), MASK_ON, len);  
   groov_ws_packet__feed_masking_key(packet_header.masking_key);
-
-  memcpy(outgoing.base, (char *) &packet_header, header_size);
-  outgoing.len = header_size + len;
-
-  for (index = 0; index < len; ++index) {
-    current_mask = packet_header.masking_key[(index % 4)];
-    outgoing.base[header_size + index] = message[index] ^ current_mask;
-  }
-
+  groov_ws_packet__feed_outgoing((char *) &packet_header, header_size, payload, len, packet_header.masking_key);
   groov_write_outgoing_message(&outgoing);
 }
 
