@@ -40,7 +40,7 @@ typedef struct groov_event {
 // Event stack type
 
 typedef struct groov_event_stack {
-  int len;
+  unsigned len;
   groov_event_t * events;
 } groov_event_stack_t;
 
@@ -158,6 +158,7 @@ void groov_write_outgoing_blob_event(groov_blob_event_t *);
 // Loop
 
 void groov_init_loop(groov_config_t *);
+void groov_start_reading_loop();
 void groov_read_outgoing_loop_events();
 void groov_run_loop_step();
 

@@ -31,7 +31,7 @@ int groov_write_event_to_stack(groov_event_stack_t * stack, int type, char * dat
 }
 
 groov_event_stack_t * groov_read_event_stack(groov_event_stack_t * stack_copy, groov_event_stack_t * stack) {
-  int index = 0;  
+  unsigned index = 0;  
 
   stack_copy->len = stack->len;
 

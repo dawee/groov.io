@@ -23,6 +23,7 @@ void groov_update_state(groov_event_t * event) {
     state = CONNECTED;
     groov_write_outgoing_handshake_request();
     groov_reset_handshake_parser();
+    groov_start_reading_loop();
   } else if (state == CONNECTED && groov_read_handshake_event(event, &handshake_event)) {
     state = HANDSHAKE_RECEIVED;
     groov_reset_ws_packet_parser();
