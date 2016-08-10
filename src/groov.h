@@ -13,14 +13,15 @@
 
 // Fixed memory
 
-#define GROOV_MAX_BLOB_SIZE 65536
-#define GROOV_EVENT_SIZE 65536
-#define GROOV_EVENT_MAX_STACK_SIZE 100
-#define GROOV_MAX_HOST_NAME_SIZE 255
+#define GROOV_MAX_EVENT_HEADER 128
+#define GROOV_MAX_WS_HEADER 32
+
+#define GROOV_EVENT_SIZE 32768
+#define GROOV_EVENT_MAX_STACK_SIZE 1000
+
+#define GROOV_MAX_BLOB_SIZE (GROOV_EVENT_SIZE - GROOV_MAX_EVENT_HEADER)
+#define GROOV_MAX_PAYLOAD_LEN (GROOV_MAX_BLOB_SIZE - GROOV_MAX_WS_HEADER)
 #define GROOV_MAX_HANDSHAKE_SIZE 512
-#define GROOV_MAX_CONTRACT_SIZE 1024
-#define GROOV_MAX_EXTENDED_LEN 5
-#define GROOV_MAX_PAYLOAD_LEN 65536
 
 
 // Config type
@@ -108,7 +109,7 @@ typedef struct groov_io_open_event {
   unsigned timeout;
 } groov_io_open_event_t;
 
-// Message Event
+// Blob Event
 
 #define GROOV_EVENT_TYPE_BLOB 100
 typedef struct groov_blob_event {
@@ -116,6 +117,14 @@ typedef struct groov_blob_event {
   char base[GROOV_MAX_BLOB_SIZE];
 } groov_blob_event_t;
 
+// Logging Event
+
+#define GROOV_EVENT_TYPE_LOGGING 200
+typedef struct groov_logging_event {
+  char level;
+  unsigned len;
+  char base[GROOV_MAX_BLOB_SIZE];
+} groov_loggin_logging_t;
 
 /*
  * API Declarations
