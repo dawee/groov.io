@@ -1,7 +1,6 @@
 const fs = require('fs');
 const ffi = require('ffi');
 const ref = require('ref');
-const ArrayType = require('ref-array');
 const StructType = require('ref-struct');
 const path = require('path');
 const socketIO = require('socket.io');
