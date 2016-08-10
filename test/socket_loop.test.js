@@ -28,7 +28,7 @@ groov_event_t.defineProperty('data', ref.refType(uv_buf_t));
 
 const groov_events_t = StructType();
 
-for (let i = 0; i < 100; ++i) {
+for (let i = 0; i < 1000; ++i) {
   groov_events_t.defineProperty(`i${i}`, groov_event_t);
 }
 
@@ -82,6 +82,7 @@ class EventLoop {
       if (event.type == GROOV_EVENT_TYPE_LOGGING) {
         const logging_event = this.lib.groov_read_logging_event(event.ref()).deref();
         const charArray = [];
+
         for (let i = 0; i < logging_event.len && i < 100; ++i) {
           charArray.push(logging_event[`base-${i}`]);
         }
@@ -177,7 +178,7 @@ describe('socket loop', () => {
     eventLoop.start();
   });
 
-  it('should received an io/connect event', (done) => {
+  it('should received an io/open event', (done) => {
     const io = socketIO();
 
     io.listen(HOST_PORT);

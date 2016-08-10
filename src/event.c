@@ -15,13 +15,13 @@ void groov_init_event_stack(groov_event_stack_t * stack, uv_buf_t * stack_bufs, 
   for (index = 0; index < GROOV_EVENT_MAX_STACK_SIZE; ++index) {
     stack->events[index].type = GROOV_EVENT_TYPE_NONE;
     stack->events[index].data = &(stack_bufs[index]);
-    stack->events[index].data->len = GROOV_EVENT_SIZE;
+    stack->events[index].data->len = 0;
     stack->events[index].data->base = stack_memory[index];
   }
 }
 
 int groov_write_event_to_stack(groov_event_stack_t * stack, int type, char * data, size_t len) {
-  if (stack->len >= GROOV_EVENT_MAX_STACK_SIZE) return 0;
+  if (stack->len >= GROOV_EVENT_MAX_STACK_SIZE || len >= GROOV_MAX_BLOB_SIZE) return 0;
 
   stack->events[stack->len].type = type;
   stack->events[stack->len].data->len = len;

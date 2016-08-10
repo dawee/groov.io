@@ -18,6 +18,7 @@
 
 #define GROOV_EVENT_SIZE 32768
 #define GROOV_EVENT_MAX_STACK_SIZE 1000
+#define GROOV_MAX_LOGGING_SIZE 128
 
 #define GROOV_MAX_BLOB_SIZE (GROOV_EVENT_SIZE - GROOV_MAX_EVENT_HEADER)
 #define GROOV_MAX_PAYLOAD_LEN (GROOV_MAX_BLOB_SIZE - GROOV_MAX_WS_HEADER)
@@ -123,7 +124,7 @@ typedef struct groov_blob_event {
 typedef struct groov_logging_event {
   char level;
   unsigned len;
-  char base[GROOV_MAX_BLOB_SIZE];
+  char base[GROOV_MAX_LOGGING_SIZE];
 } groov_logging_event_t;
 
 /*
