@@ -11,6 +11,9 @@ typedef enum {
   PAYLOAD,
 } groov_ws_packet__state_t;
 
+static const char WS_OPCODE_TEXT = 0x01;
+static const char MASK_ON = 0x80;
+
 static groov_ws_packet_t packet;
 static groov_ws_packet__state_t packet_state;
 static unsigned long cursor;
@@ -78,16 +81,28 @@ static void groov_ws_packet__feed_masking_key(char * masking_key) {
   }
 }
 
-void groov_serialize_ws_message(char * message, uint64_t len) {
+static void groov_ws_packet__feed_reserved_and_opcode(char * reserved_and_opcode, char opcode) {
   char fin = 0x80;
-  char opcode = 0x01;
-  char mask = 0x80;
+  *reserved_and_opcode = fin + opcode;
+}
+
+static void groov_ws_packet__feed_mask_and_len(char * mask_and_len, char mask, uint64_t len) {
+  if (len > 65535) {
+    *mask_and_len = 127 | mask;
+  } else if (len > 125) {
+    *mask_and_len = 126 | mask;
+  } else {
+    *mask_and_len = ((char) len) | mask;
+  }
+}
+
+void groov_serialize_ws_message(char * message, uint64_t len) {
   char current_mask;
   uint64_t index = 0;
   uint64_t header_size = sizeof(packet_header);
 
-  packet_header.reserved_and_opcode = fin + opcode;
-  packet_header.mask_and_len = ((char) len) | mask;
+  groov_ws_packet__feed_reserved_and_opcode(&(packet_header.reserved_and_opcode), WS_OPCODE_TEXT);
+  groov_ws_packet__feed_mask_and_len(&(packet_header.mask_and_len), MASK_ON, len);  
   groov_ws_packet__feed_masking_key(packet_header.masking_key);
 
   memcpy(outgoing.base, (char *) &packet_header, header_size);

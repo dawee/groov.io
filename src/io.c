@@ -33,7 +33,7 @@ static void groov_io__serialize_message(char cmd, char * message, uint64_t len) 
 }
 
 void groov_send_io_ping() {
-  groov_io__serialize_message(IO_PACKET_TYPE_PING, (char *) ping_name, strlen(ping_name));
+  groov_io__serialize_message(IO_PACKET_TYPE_PING, (char *) ping_name, 5);
 }
 
 void groov_parse_io_message(groov_ws_packet_t * packet) {
