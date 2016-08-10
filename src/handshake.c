@@ -3,12 +3,12 @@
 #include <stdio.h>
 #include <string.h>
 
+static groov_config_t groov_config;
+
 /*
  * Request
  */
 
-static char host_name[GROOV_MAX_HOST_NAME_SIZE];
-static int host_port;
 static const char * handshake_request_header = "GET /socket.io/?transport=websocket HTTP/1.1";
 static const char * handshake_request_connection = "Connection: Upgrade";
 static const char * handshake_request_upgrade = "Upgrade: websocket";
@@ -37,8 +37,7 @@ static int groov_handshake__ended() {
 }
 
 void groov_init_handshake(groov_config_t * config) {
-  host_port = config->host_port;
-  memcpy(host_name, config->host_name->base, config->host_name->len);
+  groov_config = *config;
 }
 
 void groov_reset_handshake_parser() {
@@ -64,8 +63,8 @@ void groov_serialize_handshake_request(groov_message_event_t * message) {
     handshake_request_header,
     handshake_request_connection,
     handshake_request_upgrade,
-    host_name,
-    host_port,
+    groov_config.host_name,
+    groov_config.host_port,
     GROOV_PROTOCOL_VERSION,
     "MTMtMTQ2OTcwMDczOTcwNA=="
   );

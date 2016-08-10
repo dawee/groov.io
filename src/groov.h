@@ -26,8 +26,7 @@
 // Config type
 
 typedef struct groov_config {
-  uv_buf_t * host_name;
-  uv_buf_t * host_address;
+  const char * host_name;
   int host_port;
 } groov_config_t;
 
@@ -119,16 +118,6 @@ typedef struct groov_message_event {
 
 
 /*
- * States
- */
-
-#define GROOV_STATE_BOOT 0
-#define GROOV_STATE_CONNECTED 1
-#define GROOV_STATE_HANDSHAKE_RECEIVED 2
-#define GROOV_STATE_IO_OPEN 3
-
-
-/*
  * API Declarations
  */
 
@@ -147,6 +136,7 @@ int groov_read_io_open_event(groov_event_t *, groov_io_open_event_t *);
 
 // Handshake parser
 
+void groov_init_handshake(groov_config_t *);
 void groov_reset_handshake_parser();
 void groov_stream_to_handshake_parser(char);
 

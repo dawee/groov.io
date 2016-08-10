@@ -2,7 +2,10 @@
 
 #include <stdio.h>
 
+static groov_config_t groov_config;
+static char port_str[8];
 static uv_loop_t loop;
+static uv_getaddrinfo_t getaddrinfo_req;
 static uv_tcp_t client;
 static uv_connect_t connection;
 static struct sockaddr_in address;
@@ -45,14 +48,23 @@ static void groov_loop__write_requests() {
   write_requests_count = event_stack->len;
 }
 
+static void on_getaddrinfo(uv_getaddrinfo_t * req, int status, struct addrinfo * res) {
+  address = *((struct sockaddr_in *)res->ai_addr);
+
+  uv_tcp_connect(&connection, &client, (const struct sockaddr*)&address, groov_loop__on_connect);
+  uv_freeaddrinfo(res);
+}
+
+void groov_connect() {
+  sprintf(port_str, "%d", 3000);
+  uv_getaddrinfo(&loop, &getaddrinfo_req, on_getaddrinfo, groov_config.host_name, port_str, NULL);
+}
+
 void groov_init_loop(groov_config_t * config) {
-  // Make sure host address is readable as 'C String'
-  config->host_address->base[config->host_address->len] = 0;
+  groov_config = *config;
 
   uv_loop_init(&loop);
   uv_tcp_init(&loop, &client);
-  uv_ip4_addr(config->host_address->base, config->host_port, &address);
-  uv_tcp_connect(&connection, &client, (const struct sockaddr*)&address, groov_loop__on_connect);
 }
 
 void groov_run_loop_step() {

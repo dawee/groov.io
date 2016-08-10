@@ -1,5 +1,6 @@
 #include "groov.h"
 #include <time.h>
+#include <stdlib.h>
 
 void groov_init(groov_config_t * config) {
   srand(time(NULL));
