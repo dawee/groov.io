@@ -52,7 +52,7 @@ static void groov_loop__on_connect(uv_connect_t * new_connection, int status) {
   }
 }
 
-static void on_write(uv_write_t* req, int status) {
+static void groov_loop__on_write(uv_write_t* req, int status) {
   if (status != 0) return;
 
   writing_index++;
@@ -60,7 +60,7 @@ static void on_write(uv_write_t* req, int status) {
   if (writing_index >= event_stack->len) {
     sending = 0;
   } else {
-    uv_write(&write_request, connection.handle, event_stack->events[writing_index].data, 1, on_write);
+    uv_write(&write_request, connection.handle, event_stack->events[writing_index].data, 1, groov_loop__on_write);
   }
 }
 
@@ -71,10 +71,10 @@ static void groov_loop__read_outgoing_events() {
 
   sending = 1;
   writing_index = 0;
-  uv_write(&write_request, connection.handle, event_stack->events[writing_index].data, 1, on_write);
+  uv_write(&write_request, connection.handle, event_stack->events[writing_index].data, 1, groov_loop__on_write);
 }
 
-static void on_getaddrinfo(uv_getaddrinfo_t * req, int status, struct addrinfo * res) {
+static void groov_loop__on_getaddrinfo(uv_getaddrinfo_t * req, int status, struct addrinfo * res) {
   address = *(res->ai_addr);
 
   uv_tcp_connect(&connection, &client, &address, groov_loop__on_connect);
@@ -83,7 +83,7 @@ static void on_getaddrinfo(uv_getaddrinfo_t * req, int status, struct addrinfo *
 
 void groov_connect() {
   sprintf(port_str, "%d", groov_config.host_port);
-  uv_getaddrinfo(&loop, &getaddrinfo_req, on_getaddrinfo, groov_config.host_name, port_str, NULL);
+  uv_getaddrinfo(&loop, &getaddrinfo_req, groov_loop__on_getaddrinfo, groov_config.host_name, port_str, NULL);
 }
 
 void groov_init_loop(groov_config_t * config) {
