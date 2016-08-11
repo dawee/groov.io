@@ -39,7 +39,7 @@ static void groov_send_io_pong(groov_ws_packet_t * ping_packet) {
 void groov_parse_io_message(groov_ws_packet_t * packet) {
   char io_cmd = packet->payload[0];
 
-  if (packet->opcode != 1 || packet->len < 1) return;
+  if (packet->opcode != 1 || packet->len < 2) return;
 
   if (io_cmd == IO_PACKET_TYPE_CONNECT) {
     groov_io__parse_connect(&(packet->payload[1]), packet->len - 1);
