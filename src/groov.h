@@ -176,7 +176,6 @@ void groov_run_loop_step();
 // IO
 
 void groov_parse_io_message(groov_ws_packet_t *);
-void groov_send_io_ping();
 
 // Logger
 

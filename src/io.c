@@ -32,8 +32,8 @@ static void groov_io__send_message(char cmd, char * message, uint64_t len) {
   groov_send_ws_packet(outgoing_message, len + 1);
 }
 
-void groov_send_io_ping() {
-  groov_io__send_message(IO_PACKET_TYPE_PING, (char *) ping_name, 5);
+static void groov_send_io_pong(groov_ws_packet_t * ping_packet) {
+  groov_io__send_message(IO_PACKET_TYPE_PONG, &(ping_packet->payload[1]), ping_packet->len - 1);
 }
 
 void groov_parse_io_message(groov_ws_packet_t * packet) {
@@ -43,7 +43,7 @@ void groov_parse_io_message(groov_ws_packet_t * packet) {
 
   if (io_cmd == IO_PACKET_TYPE_CONNECT) {
     groov_io__parse_connect(&(packet->payload[1]), packet->len - 1);
-  } else if (io_cmd == IO_PACKET_TYPE_PONG) {
-    GROOV_DEBUG_LOG("Server sent pong !");
+  } else if (io_cmd == IO_PACKET_TYPE_PING) {
+    groov_send_io_pong(packet);
   }
 }

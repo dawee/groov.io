@@ -25,7 +25,6 @@ void groov_update_state(groov_event_t * event) {
     groov_reset_ws_packet_parser();
   } else if (state == HANDSHAKE_RECEIVED  && event->type == GROOV_EVENT_TYPE_IO_OPEN) {
     state = IO_OPEN;
-    groov_send_io_ping();
   }
 }
 
