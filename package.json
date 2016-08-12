@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "lib-copy": "node-gyp build && cp build/Release/groov.so Unity/Groov.io/Assets/Plugins/GroovIO/GroovIO.so",
     "configure": "node-gyp configure",
     "pretest": "node-gyp build",
     "test": "mocha"

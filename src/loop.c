@@ -59,6 +59,8 @@ static void groov_loop__on_write(uv_write_t* req, int status) {
 }
 
 static void groov_loop__on_getaddrinfo(uv_getaddrinfo_t * req, int status, struct addrinfo * res) {
+  if (status != 0) return;
+  
   address = *(res->ai_addr);
 
   uv_tcp_connect(&connection, &client, &address, groov_loop__on_connect);
